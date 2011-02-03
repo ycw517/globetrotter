@@ -1,0 +1,15 @@
+=Brian's Projects=
+
+==Homework 1: Photo Switcher==
+[http://www.youtube.com/watch?v=WJjEvwy8yDc YouTube Demonstration]
+
+  # Write an application to display your name and photo. Run this application either on the emulator or an Android device.
+  # Application framework: Intent. Extend the application of part (2) to two activities, and then use Intent to communicate between these two activities.
+  Add a button "change picture" in your layout. When this button is pressed, it activates the second activity. In the second activity, allow the user to choose a picture from a set of pictures. When the user presses the button "pick" in this second activity, it returns the chosen picture to the first activity which in turn displays the returned picture.
+
+==Homework 2: Lunar Lander==
+[http://www.youtube.com/watch?v=YPiuvESpVaA YouTube Demonstration]
+
+  # Write an application to display your name and photo. Run this application either on the emulator or an Android device.
+  # Application framework: Intent. Extend the application of part (2) to two activities, and then use Intent to communicate between these two activities.
+  Add a button "change picture" in your layout. When this button is pressed, it activates the second activity. In the second activity, allow the user to choose a picture from a set of pictures. When the user presses the button "pick" in this second activity, it returns the chosen picture to the first activity which in turn displays the returned picture.
