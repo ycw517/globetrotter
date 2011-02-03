@@ -1,5 +1,7 @@
 =Brian's Projects=
 
+Here are projects I completed in [http://cadlab.ece.ucsb.edu/ece194/ ECE194] (Winter 2011)
+
 ==Homework 1: Photo Switcher==
 [http://www.youtube.com/watch?v=WJjEvwy8yDc YouTube Demonstration]
 
