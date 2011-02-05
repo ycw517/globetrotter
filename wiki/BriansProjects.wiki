@@ -22,7 +22,7 @@ Here are projects I completed in [http://cadlab.ece.ucsb.edu/ece194/ ECE194] (Wi
 ===Part 1: JDK===
   * [http://www.youtube.com/watch?v=mqsTvg2x5mk YouTube Demonstration (JDK)]
 
-  # Create a medical imaging viewer (for 181 MRI slices of a brain) with Rician Denoising capabilities by calling a native function (written in C) by  [http://www.math.ucla.edu/~getreuer/ Pascal Getreuer's] for Rician Denoising using the Java Native Interface. 
+  # Create a medical imaging viewer (for 181 MRI slices of a brain) with Rician Denoising capabilities by calling a native function (written in C) by  [http://www.math.ucla.edu/~getreuer/ Pascal Getreuer] for Rician Denoising using the Java Native Interface. 
 
 ===Part 2: OpenGL 1.0===
   * [http://www.youtube.com/watch?v=LbdX9APbqK4 YouTube Demonstration (OpenGL 1.0)]
