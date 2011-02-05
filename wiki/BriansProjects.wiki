@@ -17,5 +17,18 @@ Here are projects I completed in [http://cadlab.ece.ucsb.edu/ece194/ ECE194] (Wi
     * Shake to restart
     * Tilt to control
 
-==Homework 3: JNI and OpenGL==
-  * In progress
+==Homework 3: JDK and OpenGL==
+
+===Part 1: JDK===
+  * [http://www.youtube.com/watch?v=mqsTvg2x5mk YouTube Demonstration (JDK)]
+
+  # Create a medical imaging viewer (for 181 MRI slices of a brain) with Rician Denoising capabilities by calling a native function (written in C) by  [http://www.math.ucla.edu/~getreuer/ Pascal Getreuer's] for Rician Denoising using the Java Native Interface. 
+
+===Part 2: OpenGL 1.0===
+  * [http://www.youtube.com/watch?v=LbdX9APbqK4 YouTube Demonstration (OpenGL 1.0)]
+
+  # Create a 3D cube with different colored faces and rotate it such that 3 of the faces can be seen. Add buttons to a menu and implement the following functions:
+    * Zoom In
+    * Zoom Out
+    * Translate (on the x axis)
+    * Apply a texture to the top face of the cube
