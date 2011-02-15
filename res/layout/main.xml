@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center_vertical|center_horizontal"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:text="@string/hello" android:layout_height="wrap_content"/>
-<Button android:layout_width="match_parent" android:id="@+id/Button01" android:text="Add Location" android:layout_height="wrap_content"></Button>
-<Button android:layout_width="match_parent" android:id="@+id/Button03" android:text="Random Location" android:layout_height="wrap_content"></Button>
-<Spinner android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/Spinner01"></Spinner>
-</LinearLayout>
+
+
+<Button
+    android:id="@+id/tag_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tag_button"
+    android:gravity="bottom|center_horizontal"
+    android:textColor="#FFFFFF"
+	android:text="@string/tag"
+	/>
+
+<Button
+    android:id="@+id/view_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/view_button"
+    android:gravity="bottom|center_horizontal"
+    android:textColor="#FFFFFF"
+	android:text="@string/view"
+	android:layout_toRightOf="@id/tag_button"
+	
+     />
+
+</RelativeLayout>

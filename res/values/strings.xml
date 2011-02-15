@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, GlobeTrotter!</string>
+    <string name="title">GlobeTrotter</string>
     <string name="app_name">GlobeTrotter</string>
+<string name="tag">Add Tag</string>
+<string name="view">View Tags</string>
 </resources>
