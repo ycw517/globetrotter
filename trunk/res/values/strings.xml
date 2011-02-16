@@ -2,6 +2,8 @@
 <resources>
     <string name="title">GlobeTrotter</string>
     <string name="app_name">GlobeTrotter</string>
-<string name="tag">Add Tag</string>
-<string name="view">View Tags</string>
+    <string name="add_tag">GlobeTrotter / Add a Tag</string>
+   
+	<string name="tag">Add Tag</string>
+	<string name="view">View Tags</string>
 </resources>
