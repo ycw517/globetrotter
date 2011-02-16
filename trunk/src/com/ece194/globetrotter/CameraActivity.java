@@ -1,3 +1,4 @@
+// this should be revision 21
 package com.ece194.globetrotter;
 import java.io.IOException;
 
@@ -13,6 +14,7 @@ import android.view.SurfaceView;
 import android.widget.Toast;
 
 public class CameraActivity extends Activity {
+	
 	private SurfaceView preview=null;
 	private SurfaceHolder previewHolder=null;
 	private Camera camera=null;
