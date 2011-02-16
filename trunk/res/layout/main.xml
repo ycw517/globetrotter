@@ -15,7 +15,7 @@
     android:gravity="bottom|center_horizontal"
     android:textColor="#FFFFFF"
 	android:text="@string/tag"
-	android:onClick="makeToast"
+	android:onClick="onClick"
 	
 	/>
 
