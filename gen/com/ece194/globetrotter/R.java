@@ -28,9 +28,10 @@ public final class R {
         public static final int main=0x7f030001;
     }
     public static final class string {
+        public static final int add_tag=0x7f040002;
         public static final int app_name=0x7f040001;
-        public static final int tag=0x7f040002;
+        public static final int tag=0x7f040003;
         public static final int title=0x7f040000;
-        public static final int view=0x7f040003;
+        public static final int view=0x7f040004;
     }
 }
