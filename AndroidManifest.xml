@@ -27,6 +27,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.ece194.globetrotter.ViewerActivity"
+        		 android:label="@string/view_tags">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+
+
     </application>
     
     

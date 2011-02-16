@@ -15,7 +15,7 @@
     android:gravity="bottom|center_horizontal"
     android:textColor="#FFFFFF"
 	android:text="@string/tag"
-	android:onClick="onClick"
+	android:onClick="capture"
 	
 	/>
 
@@ -28,7 +28,7 @@
     android:textColor="#FFFFFF"
 	android:text="@string/view"
 	android:layout_toRightOf="@id/tag_button"
-	android:onClick="makeToast"
+	android:onClick="view"
 	
      />
 

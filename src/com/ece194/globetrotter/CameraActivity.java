@@ -25,14 +25,8 @@ public class CameraActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.capture);
 
-		
-
-
-		
 		preview=(SurfaceView)findViewById(R.id.preview);
 		
-		
-
 		previewHolder=preview.getHolder();
 		previewHolder.addCallback(surfaceCallback);
 		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -90,6 +84,8 @@ public class CameraActivity extends Activity {
 			// no-op
 		}
 		
+		
+		
 		public void frameCapture() {
 			MediaRecorder recorder = new MediaRecorder();
 			recorder.setCamera(camera);
@@ -107,7 +103,6 @@ public class CameraActivity extends Activity {
 			}
 	        recorder.start();
 
-			
 		}
 		
 	};

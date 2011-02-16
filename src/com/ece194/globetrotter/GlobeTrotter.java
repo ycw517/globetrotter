@@ -10,7 +10,9 @@ import android.widget.Toast;
 
 public class GlobeTrotter extends Activity {
 	
-	public final static int CAPTURE_TAG = 100;
+	public final static int CAPTURE = 100;
+	public final static int VIEWER = 200;
+
 	
     /** Called when the activity is first created. */
     @Override
@@ -21,7 +23,6 @@ public class GlobeTrotter extends Activity {
 
     
 	public void makeToast(View view) {
-		
 		Context context = getApplicationContext();
 		int duration = Toast.LENGTH_SHORT;
 		String text = "Don't touch me!";
@@ -29,18 +30,25 @@ public class GlobeTrotter extends Activity {
 	}
 	
 	// Open the new screen.
-	public void onClick(View v){
+	public void capture(View v){
 	    // Start the activity whose result we want to retrieve.  The
 	    // result will come back with request code GET_CODE.
 	    Intent intent = new Intent(this, CameraActivity.class);
-	    startActivityForResult(intent, CAPTURE_TAG);
+	    startActivityForResult(intent, CAPTURE);
 	}
 
+	public void view(View v){
+	    // Start the activity whose result we want to retrieve.  The
+	    // result will come back with request code GET_CODE.
+	    Intent intent = new Intent(this, ViewerActivity.class);
+	    startActivityForResult(intent, VIEWER);
+	}
+	
 	// Listen for results.
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 	    // See which child activity is calling us back.
 	    switch (resultCode) {
-	        case CAPTURE_TAG:
+	        case CAPTURE:
 	            // This is the standard resultCode that is sent back if the
 	            // activity crashed or didn't doesn't supply an explicit result.
 	            if (resultCode == RESULT_CANCELED){
@@ -49,6 +57,16 @@ public class GlobeTrotter extends Activity {
 	            else {
 	            	// do something with (data)
 	            }
+	        case VIEWER:
+	            // This is the standard resultCode that is sent back if the
+	            // activity crashed or didn't doesn't supply an explicit result.
+	            if (resultCode == RESULT_CANCELED){
+	            	// toast? capture was cancelled
+	            } 
+	            else {
+	            	// do something with (data)
+	            }
+
 	        default:
 	            break;
 	    }
