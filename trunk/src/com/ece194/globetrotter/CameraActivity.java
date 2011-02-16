@@ -1,6 +1,9 @@
 package com.ece194.globetrotter;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.hardware.Camera;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -75,8 +78,7 @@ public class CameraActivity extends Activity {
 			Surface.setOrientation(Display.DEFAULT_DISPLAY, 
 			Surface.ROTATION_90); 
 
-			
-	//		p.setPreviewSize(width, height);
+			p.setPreviewSize(width, height);
 			camera.setParameters(p);
 			camera.startPreview();
 			inPreview=true;
@@ -85,5 +87,26 @@ public class CameraActivity extends Activity {
 		public void surfaceDestroyed(SurfaceHolder holder) {
 			// no-op
 		}
+		
+		public void frameCapture() {
+			MediaRecorder recorder = new MediaRecorder();
+			recorder.setCamera(camera);
+			recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
+			recorder.setOutputFormat(MediaRecorder.VideoEncoder.H264);
+			recorder.setVideoSize(320,240);
+	        try {
+				recorder.prepare();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        recorder.start();
+
+			
+		}
+		
 	};
 }
