@@ -7,4 +7,9 @@
    
 	<string name="tag">Add Tag</string>
 	<string name="view">View Tags</string>
+	
+	<string name="menu_zoom">Zoom</string>
+	<string name="menu_pan">Pan</string>
+	<string name="menu_reset">Reset</string>
+	
 </resources>
