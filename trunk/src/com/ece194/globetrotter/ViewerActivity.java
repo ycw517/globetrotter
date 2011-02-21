@@ -8,10 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
-import com.ece194.zoom.ImageZoomView;
-import com.ece194.zoom.SimpleZoomListener;
-import com.ece194.zoom.SimpleZoomListener.ControlType;
-import com.ece194.zoom.ZoomState;
+import com.ece194.pan.*;
 
 public class ViewerActivity extends Activity {
     
@@ -25,16 +22,16 @@ public class ViewerActivity extends Activity {
     private static final int MENU_ID_RESET = 2;
 
     /** Image zoom view */
-    private ImageZoomView mZoomView;
+    private ImageViewer mImgView;
 
     /** Zoom state */
-    private ZoomState mZoomState;
+    private PanState mPanState;
 
     /** Decoded bitmap image */
     private Bitmap mBitmap;
 
     /** On touch listener for zoom view */
-    private SimpleZoomListener mZoomListener;
+    private PanTouchListener mPanListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,20 +45,20 @@ public class ViewerActivity extends Activity {
    //     image.setImageBitmap(bMap);
 
 
-        mZoomState = new ZoomState();
+        mPanState = new PanState();
 
    //     mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.image800x600);
         mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
         
-        mZoomListener = new SimpleZoomListener();
-        mZoomListener.setZoomState(mZoomState);
+        mPanListener = new PanTouchListener();
+        mPanListener.setPanState(mPanState);
 
-        mZoomView = (ImageZoomView)findViewById(R.id.zoomview);
-        mZoomView.setZoomState(mZoomState);
-        mZoomView.setImage(mBitmap);
-        mZoomView.setOnTouchListener(mZoomListener);
+        mImgView = (ImageViewer)findViewById(R.id.zoomview);
+        mImgView.setPanState(mPanState);
+        mImgView.setImage(mBitmap);
+        mImgView.setOnTouchListener(mPanListener);
 
-        resetZoomState();
+        resetPanState();
     }
 
     @Override
@@ -69,10 +66,10 @@ public class ViewerActivity extends Activity {
         super.onDestroy();
 
         mBitmap.recycle();
-        mZoomView.setOnTouchListener(null);
-        mZoomState.deleteObservers();
+        mImgView.setOnTouchListener(null);
+        mPanState.deleteObservers();
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(Menu.NONE, MENU_ID_ZOOM, 0, R.string.menu_zoom);
@@ -85,29 +82,28 @@ public class ViewerActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_ID_ZOOM:
-                mZoomListener.setControlType(ControlType.ZOOM);
+                mPanListener.setControlType(ControlType.ZOOM);
                 break;
 
             case MENU_ID_PAN:
-                mZoomListener.setControlType(ControlType.PAN);
+                mPanListener.setControlType(ControlType.PAN);
                 break;
 
             case MENU_ID_RESET:
-                resetZoomState();
+                resetPanState();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     /**
      * Reset zoom state and notify observers
      */
-    private void resetZoomState() {
-        mZoomState.setPanX(0.5f);
-        mZoomState.setPanY(0.5f);
-        mZoomState.setZoom(1f);
-        mZoomState.notifyObservers();
+    private void resetPanState() {
+        mPanState.setPanX(0.5f);
+        mPanState.setPanY(0.5f);
+        mPanState.notifyObservers();
     }
 }
 
