@@ -33,7 +33,7 @@ import android.view.View;
 /**
  * Simple on touch listener for zoom view
  */
-public class PanTouchListener implements View.OnTouchListener {
+public class PanTouchListener implements View.OnTouchListener, PanListener {
 
 	/** Scaling factor to make touch less senstive */
     private static final float TOUCH_SCALE_FACTOR = 2.5f;
