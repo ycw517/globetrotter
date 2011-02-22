@@ -1,6 +1,7 @@
 package com.ece194.globetrotter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,15 +13,18 @@ import com.ece194.pan.*;
 
 public class ViewerActivity extends Activity {
     
-    /** Constant used as menu item id for setting zoom control type */
-    private static final int MENU_ID_ZOOM = 0;
+	/** Private const that names the touch listener */
+    private static final int TOUCH_LISTENER = 0;
 
-    /** Constant used as menu item id for setting pan control type */
-    private static final int MENU_ID_PAN = 1;
+    /** Private const that names the compass listener */
+    private static final int COMPASS_LISTENER = 1;
 
-    /** Constant used as menu item id for resetting zoom state */
-    private static final int MENU_ID_RESET = 2;
-
+    /** Menu item touch */
+    private static final int MENU_TOUCH = 0;
+    
+    /** Menu item compass */
+    private static final int MENU_COMPASS = 1;
+    
     /** Image zoom view */
     private ImageViewer mImgView;
 
@@ -31,7 +35,10 @@ public class ViewerActivity extends Activity {
     private Bitmap mBitmap;
 
     /** On touch listener for zoom view */
-    private PanTouchListener mPanListener;
+    private PanListener mPanListener;
+    
+    /** Determine which sensor to use */
+    private int mListener = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,15 +57,25 @@ public class ViewerActivity extends Activity {
    //     mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.image800x600);
         mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
         
-        mPanListener = new PanTouchListener();
+        if (mListener == TOUCH_LISTENER) {
+            mPanListener = new PanTouchListener();	
+        }
+        else if (mListener == COMPASS_LISTENER) {
+        	mPanListener = new PanCompassListener(getApplicationContext());
+        }
         mPanListener.setPanState(mPanState);
 
         mImgView = (ImageViewer)findViewById(R.id.zoomview);
         mImgView.setPanState(mPanState);
         mImgView.setImage(mBitmap);
-        mImgView.setOnTouchListener(mPanListener);
+        if (mListener == TOUCH_LISTENER) {
+        	mImgView.setOnTouchListener((PanTouchListener)mPanListener);
+        }
+        else if (mListener == COMPASS_LISTENER) {
+        	// TODO: do the compass setup?
+        }
 
-        resetPanState();
+        mPanState.resetPanState();
     }
 
     @Override
@@ -69,41 +86,27 @@ public class ViewerActivity extends Activity {
         mImgView.setOnTouchListener(null);
         mPanState.deleteObservers();
     }
-/*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE, MENU_ID_ZOOM, 0, R.string.menu_zoom);
-        menu.add(Menu.NONE, MENU_ID_PAN, 1, R.string.menu_pan);
-        menu.add(Menu.NONE, MENU_ID_RESET, 2, R.string.menu_reset);
+        menu.add(Menu.NONE, MENU_TOUCH, 0, R.string.menu_touch);
+        menu.add(Menu.NONE, MENU_COMPASS, 1, R.string.menu_compass);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_ID_ZOOM:
-                mPanListener.setControlType(ControlType.ZOOM);
+            case MENU_TOUCH:
+                mListener = TOUCH_LISTENER;
                 break;
 
-            case MENU_ID_PAN:
-                mPanListener.setControlType(ControlType.PAN);
-                break;
-
-            case MENU_ID_RESET:
-                resetPanState();
+            case MENU_COMPASS:
+                mListener = COMPASS_LISTENER;
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-*/
-    /**
-     * Reset zoom state and notify observers
-     */
-    private void resetPanState() {
-        mPanState.setPanX(0.5f);
-        mPanState.setPanY(0.5f);
-        mPanState.notifyObservers();
     }
 }
 

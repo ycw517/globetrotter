@@ -63,4 +63,13 @@ public class PanState extends Observable {
             setChanged();
         }
     }
+    
+    /**
+     * Reset pan-x and pan-y
+     */
+    
+    public void resetPanState() {
+    	mPanX = 0.5f;
+    	mPanY = 0.5f;
+    }
 }
