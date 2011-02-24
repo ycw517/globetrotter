@@ -60,10 +60,12 @@ public class ViewerActivity extends Activity {
             	mPanListener.setOrientation(currConfig.orientation);
     			break;
     	}
+    	mImgView.setPanState(mPanState);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+    	super.onConfigurationChanged(newConfig);
     	if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
     		mPanListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
     	else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
