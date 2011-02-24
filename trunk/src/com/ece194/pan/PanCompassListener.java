@@ -8,6 +8,9 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 public class PanCompassListener implements SensorEventListener, PanListener {
+	
+	/** Scaling factor to make touch less senstive */
+    private static final float COMPASS_THRESHOLD_FACTOR = 5.f;
     
     /** State being controlled by touch events */
     private PanState mState;
@@ -111,7 +114,7 @@ public class PanCompassListener implements SensorEventListener, PanListener {
         	//Log.v("PanCompassListener", "portrait heading: "+mHeading);
         }
         
-        if (Math.abs(newHeading-mHeading) > 1.f) {
+        if (Math.abs(newHeading-mHeading) > COMPASS_THRESHOLD_FACTOR) {
         	mHeading = newHeading;
         	mState.setPanX(mHeading/360.f);
         	mState.notifyObservers();
