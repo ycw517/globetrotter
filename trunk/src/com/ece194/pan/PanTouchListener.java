@@ -85,5 +85,13 @@ public class PanTouchListener implements View.OnTouchListener, PanListener {
 
         return true;
     }
+    
+    public void setOrientation(int orientconst) {
+    	// do nothing
+    }
+    
+    public void destroy() {
+    	mState = null;
+    }
 
 }

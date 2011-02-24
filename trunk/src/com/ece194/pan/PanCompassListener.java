@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.util.Log;
 
 public class PanCompassListener implements SensorEventListener, PanListener {
@@ -14,7 +13,7 @@ public class PanCompassListener implements SensorEventListener, PanListener {
     private PanState mState;
 
     /** Heading (in degrees) of previously handled touch event */
-    private float mHeading;
+    private float mHeading = 180.f;
 
     /** Sensor manager */
     private SensorManager mSensorManager;
@@ -23,7 +22,7 @@ public class PanCompassListener implements SensorEventListener, PanListener {
     private int mScreenOrientation;
 
     /** Consts for mScreenOrientation */
-    private static final int ORIENTATION_LANDSCAPE = 0;
+    private static final int ORIENTATION_LANDSCAPE = 2;
     private static final int ORIENTATION_PORTRAIT = 1;
     
     /** Data holders */
@@ -42,12 +41,23 @@ public class PanCompassListener implements SensorEventListener, PanListener {
     public void resume() {
         Sensor gsensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         Sensor msensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        mSensorManager.registerListener(this, gsensor, SensorManager.SENSOR_DELAY_GAME);
-        mSensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, gsensor, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, msensor, SensorManager.SENSOR_DELAY_UI);
     }
     
     public void stop() {
         mSensorManager.unregisterListener(this);
+        Log.v("PanCompassListener", "unregistered the listener, GOOD JOB");
+    }
+    
+    public void destroy() {
+    	stop();
+    	mState = null;
+    	mSensorManager = null;
+    	mGData = null;
+    	mR = null;
+    	mR = null;
+    	mOrientation = null;
     }
     
     public void setPanState(PanState state) {
@@ -66,7 +76,6 @@ public class PanCompassListener implements SensorEventListener, PanListener {
 	}
 
 	public void onSensorChanged(SensorEvent event) {
-		/*
 		int type = event.sensor.getType();
         float[] data;
         if (type == Sensor.TYPE_ACCELEROMETER) {
@@ -79,21 +88,33 @@ public class PanCompassListener implements SensorEventListener, PanListener {
         }
         for (int i=0 ; i<3 ; i++)
             data[i] = event.values[i];
-        */
+        
 
 		// get sensor data
         SensorManager.getRotationMatrix(mR, mI, mGData, mMData);
         SensorManager.getOrientation(mR, mOrientation);
-        float incl = SensorManager.getInclination(mI);
+        //float incl = SensorManager.getInclination(mI);
 
-        Log.d("Compass", "yaw: " + (int)(mOrientation[0]*rad2deg) +
+        /*Log.d("Compass", "yaw: " + (int)(mOrientation[0]*rad2deg) +
         	"  pitch: " + (int)(mOrientation[1]*rad2deg) +
         	"  roll: " + (int)(mOrientation[2]*rad2deg) +
         	"  incl: " + (int)(incl*rad2deg)
-         	);
+         	);*/
         
-        // TODO: update pan state
-        // should be simple business
+        float newHeading;
+        if (mScreenOrientation == ORIENTATION_LANDSCAPE) {
+        	newHeading = mOrientation[0]*rad2deg + 180.f;
+        	//Log.v("PanCompassListener", "landscape heading: "+mHeading);
+        }
+        else {
+        	newHeading = mOrientation[2]*rad2deg + 180.f;
+        	//Log.v("PanCompassListener", "portrait heading: "+mHeading);
+        }
         
+        if (Math.abs(newHeading-mHeading) > 1.f) {
+        	mHeading = newHeading;
+        	mState.setPanX(mHeading/360.f);
+        	mState.notifyObservers();
+        }
 	}
 }

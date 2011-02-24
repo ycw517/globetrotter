@@ -27,17 +27,16 @@
 
 package com.ece194.pan;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * View capable of drawing an image at different zoom state levels
@@ -106,7 +105,7 @@ public class ImageViewer extends View implements Observer {
             final int bitmapHeight = mBitmap.getHeight();
 
             final float panX = mState.getPanX();
-            final float panY = mState.getPanY();
+            //final float panY = mState.getPanY();
             final float scaleFactor = (float)bitmapHeight / (float)viewHeight;
             
             // Setup source and destination rectangles
@@ -144,7 +143,6 @@ public class ImageViewer extends View implements Observer {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-
         invalidate();
     }
 
