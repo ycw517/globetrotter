@@ -1,15 +1,19 @@
 package com.ece194.globetrotter;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 
-import com.ece194.pan.*;
+import com.ece194.pan.ImageViewer;
+import com.ece194.pan.PanCompassListener;
+import com.ece194.pan.PanListener;
+import com.ece194.pan.PanState;
+import com.ece194.pan.PanTouchListener;
 
 public class ViewerActivity extends Activity {
     
@@ -38,7 +42,33 @@ public class ViewerActivity extends Activity {
     private PanListener mPanListener;
     
     /** Determine which sensor to use */
-    private int mListener = 0;
+    private int mListener = COMPASS_LISTENER;
+
+    private void setSensorTo(int sensor) {
+		if (mPanListener != null) {
+			Log.v("setSensorTo", "destroying sensor, GOOD JOB");
+			mPanListener.destroy();
+			mPanListener = null;
+		}
+    	switch (sensor) {
+    		case TOUCH_LISTENER:
+    			mPanListener = new PanTouchListener();
+    			break;
+    		case COMPASS_LISTENER:
+    			mPanListener = new PanCompassListener(getApplicationContext());
+            	Configuration currConfig = getResources().getConfiguration();
+            	mPanListener.setOrientation(currConfig.orientation);
+    			break;
+    	}
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    	if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+    		mPanListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+    	else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+    		mPanListener.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,35 +86,14 @@ public class ViewerActivity extends Activity {
 
    //     mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.image800x600);
         mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
-        
-        if (mListener == TOUCH_LISTENER) {
-            mPanListener = new PanTouchListener();	
-        }
-        else if (mListener == COMPASS_LISTENER) {
-        	mPanListener = new PanCompassListener(getApplicationContext());
-        }
-        mPanListener.setPanState(mPanState);
 
-        mImgView = (ImageViewer)findViewById(R.id.zoomview);
+        mImgView = (ImageViewer)findViewById(R.id.imgview);
         mImgView.setPanState(mPanState);
         mImgView.setImage(mBitmap);
-        if (mListener == TOUCH_LISTENER) {
-        	mImgView.setOnTouchListener((PanTouchListener)mPanListener);
-        }
-        else if (mListener == COMPASS_LISTENER) {
-        	// TODO: do the compass setup?
-        }
-
+        setSensorTo(mListener);
+        
+        mPanListener.setPanState(mPanState);
         mPanState.resetPanState();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        mBitmap.recycle();
-        mImgView.setOnTouchListener(null);
-        mPanState.deleteObservers();
     }
 
     @Override
@@ -93,16 +102,25 @@ public class ViewerActivity extends Activity {
         menu.add(Menu.NONE, MENU_COMPASS, 1, R.string.menu_compass);
         return super.onCreateOptionsMenu(menu);
     }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
+        mBitmap.recycle();
+        mImgView.setOnTouchListener(null);
+        mPanState.deleteObservers();
+        mPanListener.destroy();
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_TOUCH:
-                mListener = TOUCH_LISTENER;
+                setSensorTo(TOUCH_LISTENER);
                 break;
-
             case MENU_COMPASS:
-                mListener = COMPASS_LISTENER;
+                setSensorTo(COMPASS_LISTENER);
                 break;
         }
 
