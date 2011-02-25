@@ -6,8 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.ece194.pan.ImageViewer;
 import com.ece194.pan.PanCompassListener;
@@ -42,7 +45,10 @@ public class ViewerActivity extends Activity {
     private PanCompassListener mPanCompassListener;
     
     /** Determine which sensor to use */
-    private int mListener = COMPASS_LISTENER;
+    private int mListener = TOUCH_LISTENER;
+    
+    /** Transparent buttons */
+    private Button mSensorButton;
 
     private void setSensorTo(int sensor) {
     	switch (sensor) {
@@ -56,6 +62,10 @@ public class ViewerActivity extends Activity {
     			// turn on the listener and set the current pan state
     			mImgView.setOnTouchListener(mPanTouchListener);
     			mPanTouchListener.setPanState(mPanState);
+    			// change button text
+    	        mSensorButton.setText(R.string.use_compass);
+    	        // change listener variable
+    	        mListener = TOUCH_LISTENER;
     			break;
     		case COMPASS_LISTENER:
     			// turn off the touch listener
@@ -70,6 +80,10 @@ public class ViewerActivity extends Activity {
     				mPanCompassListener.resume();
     			// set the current pan state
     			mPanCompassListener.setPanState(mPanState);
+    			// change button text
+    	        mSensorButton.setText(R.string.use_touch);
+    	        // change listener variable
+    	        mListener = COMPASS_LISTENER;
     			break;
     	}
     }
@@ -105,16 +119,44 @@ public class ViewerActivity extends Activity {
         mImgView.setPanState(mPanState);
         mImgView.setImage(mBitmap);
     	mImgView.setPanState(mPanState);
+    	// set up buttons
+        mSensorButton = (Button)findViewById(R.id.button_togglesensor);
+        
         setSensorTo(mListener);
     }
-
+    
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
+        	if (mSensorButton.getVisibility() == View.GONE)
+        		mSensorButton.setVisibility(View.VISIBLE);
+        	else
+                mSensorButton.setVisibility(View.GONE);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE, MENU_TOUCH, 0, R.string.menu_touch);
-        menu.add(Menu.NONE, MENU_COMPASS, 1, R.string.menu_compass);
+    	if (mSensorButton.getVisibility() == View.GONE)
+    		mSensorButton.setVisibility(View.VISIBLE);
+    	else
+            mSensorButton.setVisibility(View.GONE);
         return super.onCreateOptionsMenu(menu);
     }
     
+    @Override
+    public boolean onMenuOpened(int featureid, Menu menu) {
+        mSensorButton.setVisibility(View.VISIBLE);
+        return super.onMenuOpened(featureid, menu);
+    }
+    
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+    	mSensorButton.setVisibility(View.GONE);
+    }
+*/    
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -140,6 +182,13 @@ public class ViewerActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    
+    public void toggleSensor(View v) {
+    	if (mListener == COMPASS_LISTENER)
+    		setSensorTo(TOUCH_LISTENER);
+    	else
+    		setSensorTo(COMPASS_LISTENER);
     }
 }
 

@@ -11,4 +11,7 @@
 	<string name="menu_touch">Use Touch</string>
 	<string name="menu_compass">Use Compass</string>
 	
+	<string name="use_compass">Toggle Compass Input</string>
+	<string name="use_touch">Toggle Touch Input</string>
+	
 </resources>

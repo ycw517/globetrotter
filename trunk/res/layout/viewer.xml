@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.ece194.pan.ImageViewer
-    xmlns:android="http://schemas.android.com/apk/res/android" 
-    android:id="@+id/imgview"
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android" 
+	android:id="@+id/masterimgview"
     android:layout_width="fill_parent" 
-    android:layout_height="fill_parent"
+    android:layout_height="fill_parent">
+
+	<com.ece194.pan.ImageViewer
+    	android:id="@+id/imgview"
+    	android:layout_width="fill_parent" 
+    	android:layout_height="fill_parent"
+    />
+    
+    <Button
+    	android:id="@+id/button_togglesensor"
+    	android:text="TEMP"
+    	android:layout_width="wrap_content" 
+    	android:layout_height="wrap_content"
+    	android:visibility="gone"
+    	android:background="@null"
+    	android:padding="15sp"
+    	android:textColor="#ffffff"
+    	android:textSize="15sp"
+    	android:textStyle="bold"
+    	android:shadowColor="#000000"
+    	android:shadowDx="1.0"
+    	android:shadowDy="1.0"
+    	android:shadowRadius="3.0"
+    	android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:onClick="toggleSensor"
     />
 		
+</RelativeLayout>
