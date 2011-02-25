@@ -100,8 +100,7 @@ public class PanCompassListener implements SensorEventListener {
 
         /*Log.d("Compass", "yaw: " + (int)(mOrientation[0]*rad2deg) +
         	"  pitch: " + (int)(mOrientation[1]*rad2deg) +
-        	"  roll: " + (int)(mOrientation[2]*rad2deg) +
-        	"  incl: " + (int)(incl*rad2deg)
+        	"  roll: " + (int)(mOrientation[2]*rad2deg)
          	);*/
         
         float newHeading;
@@ -115,6 +114,7 @@ public class PanCompassListener implements SensorEventListener {
         }
         
         if (Math.abs(newHeading-mHeading) > COMPASS_THRESHOLD_FACTOR) {
+        	//Log.v("heading", "new heading is: " + newHeading);
         	mHeading = newHeading;
         	mState.setPanX(mHeading/360.f);
         	mState.notifyObservers();
