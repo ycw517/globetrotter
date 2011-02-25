@@ -7,9 +7,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-public class PanCompassListener implements SensorEventListener, PanListener {
+public class PanCompassListener implements SensorEventListener {
 	
-	/** Scaling factor to make touch less senstive */
+	/** Scaling factor to make touch less sensitive */
     private static final float COMPASS_THRESHOLD_FACTOR = 5.f;
     
     /** State being controlled by touch events */
