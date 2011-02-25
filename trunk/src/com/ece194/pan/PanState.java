@@ -48,6 +48,8 @@ public class PanState extends Observable {
     public void setPanX(float panX) {
         if (panX != mPanX) {
             mPanX = panX;
+            if (mPanX >= 1) mPanX -= 1;
+            if (mPanX < 0) mPanX += 1;
             setChanged();
         }
     }

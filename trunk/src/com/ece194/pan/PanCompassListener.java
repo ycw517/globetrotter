@@ -55,7 +55,7 @@ public class PanCompassListener implements SensorEventListener, PanListener {
     
     public void destroy() {
     	stop();
-    	mState = null;
+    	//mState = null;
     	mSensorManager = null;
     	mGData = null;
     	mR = null;

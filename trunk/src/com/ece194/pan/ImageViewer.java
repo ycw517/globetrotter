@@ -51,6 +51,12 @@ public class ImageViewer extends View implements Observer {
 
     /** Rectangle used (and re-used) for specifying drawing area on canvas. */
     private final Rect mRectDst = new Rect();
+    
+    /** Rectangle used for the out-of-bounds source */
+    private final Rect mRectOOBSrc = new Rect();
+    
+    /** Rectangle used for the out-of-bounds destination */
+    private final Rect mRectOOBDst = new Rect();
 
     /** The bitmap that we're zooming in, and drawing on the screen. */
     private Bitmap mBitmap;
@@ -110,31 +116,43 @@ public class ImageViewer extends View implements Observer {
             
             // Setup source and destination rectangles
             mRectSrc.left = (int)(panX * bitmapWidth - viewWidth * scaleFactor/ 2);
-            mRectSrc.top = (int)(0);
+            mRectSrc.top = 0;
             mRectSrc.right = (int)(mRectSrc.left + viewWidth * scaleFactor);
-            mRectSrc.bottom = (int)(bitmapHeight);
+            mRectSrc.bottom = bitmapHeight;
             mRectDst.left = getLeft();
             mRectDst.top = getTop();
             mRectDst.right = getRight();
             mRectDst.bottom = getBottom();
 
             // Adjust source rectangle so that it fits within the source image.
-            /*if (mRectSrc.left < 0) {
-                mRectDst.left += -mRectSrc.left * zoomX;
+            if (mRectSrc.left < 0) {
+            	int delta = -mRectSrc.left;
                 mRectSrc.left = 0;
+                mRectDst.left += (int)((float)delta/scaleFactor);
+                mRectOOBSrc.left = bitmapWidth-delta;
+                mRectOOBSrc.top = 0;
+                mRectOOBSrc.bottom = bitmapHeight;
+                mRectOOBSrc.right = bitmapWidth;
+                mRectOOBDst.left = getLeft();
+                mRectOOBDst.top = getTop();
+                mRectOOBDst.right = (int)((float)delta/scaleFactor);
+                mRectOOBDst.bottom = getBottom();
+                canvas.drawBitmap(mBitmap, mRectOOBSrc, mRectOOBDst, mPaint);
             }
             if (mRectSrc.right > bitmapWidth) {
-                mRectDst.right -= (mRectSrc.right - bitmapWidth) * zoomX;
+            	int delta = mRectSrc.right - bitmapWidth;
                 mRectSrc.right = bitmapWidth;
+                mRectDst.right -= (int)((float)delta/scaleFactor);
+                mRectOOBSrc.left = 0;
+                mRectOOBSrc.top = 0;
+                mRectOOBSrc.bottom = bitmapHeight;
+                mRectOOBSrc.right = delta;
+                mRectOOBDst.left = getRight() - (int)((float)delta/scaleFactor);
+                mRectOOBDst.top = getTop();
+                mRectOOBDst.right = getRight();
+                mRectOOBDst.bottom = getBottom();
+                canvas.drawBitmap(mBitmap, mRectOOBSrc, mRectOOBDst, mPaint);
             }
-            if (mRectSrc.top < 0) {
-                mRectDst.top += -mRectSrc.top * zoomY;
-                mRectSrc.top = 0;
-            }
-            if (mRectSrc.bottom > bitmapHeight) {
-                mRectDst.bottom -= (mRectSrc.bottom - bitmapHeight) * zoomY;
-                mRectSrc.bottom = bitmapHeight;
-            }*/
 
             canvas.drawBitmap(mBitmap, mRectSrc, mRectDst, mPaint);
         }
