@@ -11,7 +11,6 @@ import android.view.MenuItem;
 
 import com.ece194.pan.ImageViewer;
 import com.ece194.pan.PanCompassListener;
-import com.ece194.pan.PanListener;
 import com.ece194.pan.PanState;
 import com.ece194.pan.PanTouchListener;
 
