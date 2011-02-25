@@ -38,38 +38,52 @@ public class ViewerActivity extends Activity {
     /** Decoded bitmap image */
     private Bitmap mBitmap;
 
-    /** On touch listener for zoom view */
-    private PanListener mPanListener;
+    /** Touch and compass listener for zoom view */
+    private PanTouchListener mPanTouchListener;
+    private PanCompassListener mPanCompassListener;
     
     /** Determine which sensor to use */
     private int mListener = COMPASS_LISTENER;
 
     private void setSensorTo(int sensor) {
-		if (mPanListener != null) {
-			Log.v("setSensorTo", "destroying sensor, GOOD JOB");
-			mPanListener.destroy();
-			mPanListener = null;
-		}
     	switch (sensor) {
     		case TOUCH_LISTENER:
-    			mPanListener = new PanTouchListener();
+    			// if a compass listener exists, stop it from sensing
+    			if (mPanCompassListener != null)
+    				mPanCompassListener.stop();
+    			// if a touch listener doesn't exist, create one
+    			if (mPanTouchListener == null)
+    				mPanTouchListener = new PanTouchListener();
+    			// turn on the listener and set the current pan state
+    			mImgView.setOnTouchListener(mPanTouchListener);
+    			mPanTouchListener.setPanState(mPanState);
     			break;
     		case COMPASS_LISTENER:
-    			mPanListener = new PanCompassListener(getApplicationContext());
-            	Configuration currConfig = getResources().getConfiguration();
-            	mPanListener.setOrientation(currConfig.orientation);
+    			// turn off the touch listener
+    			mImgView.setOnTouchListener(null);
+    			// if a compass listener doesn't exist, create one
+    			if (mPanCompassListener == null) {
+    				mPanCompassListener = new PanCompassListener(getApplicationContext());
+            		Configuration currConfig = getResources().getConfiguration();
+            		mPanCompassListener.setOrientation(currConfig.orientation);
+    			}
+    			else // otherwise, just resume the old one
+    				mPanCompassListener.resume();
+    			// set the current pan state
+    			mPanCompassListener.setPanState(mPanState);
     			break;
     	}
-    	mImgView.setPanState(mPanState);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
     	super.onConfigurationChanged(newConfig);
-    	if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-    		mPanListener.setOrientation(Configuration.ORIENTATION_PORTRAIT);
-    	else
-    		mPanListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+    	if (mPanCompassListener != null) {
+    		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+    			mPanCompassListener.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+    		else
+    			mPanCompassListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
+    	}
     }
 
     @Override
@@ -78,24 +92,21 @@ public class ViewerActivity extends Activity {
 
         setContentView(R.layout.viewer);
         
-        
    //     ImageView image = (ImageView) findViewById(R.id.left_view);
    //     Bitmap bMap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
    //     image.setImageBitmap(bMap);
-
-
-        mPanState = new PanState();
-
-   //     mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.image800x600);
+        
         mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
-
+        
+        // create a new pan state
+        mPanState = new PanState();
+        mPanState.resetPanState();
+        // set up the image viewer 
         mImgView = (ImageViewer)findViewById(R.id.imgview);
         mImgView.setPanState(mPanState);
         mImgView.setImage(mBitmap);
+    	mImgView.setPanState(mPanState);
         setSensorTo(mListener);
-        
-        mPanListener.setPanState(mPanState);
-        mPanState.resetPanState();
     }
 
     @Override
@@ -112,7 +123,10 @@ public class ViewerActivity extends Activity {
         mBitmap.recycle();
         mImgView.setOnTouchListener(null);
         mPanState.deleteObservers();
-        mPanListener.destroy();
+        if (mPanCompassListener != null)
+        	mPanCompassListener.destroy();
+        mPanCompassListener = null;
+        mPanTouchListener = null;
     }
     
     @Override

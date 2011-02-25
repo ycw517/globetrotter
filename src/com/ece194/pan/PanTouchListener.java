@@ -33,9 +33,9 @@ import android.view.View;
 /**
  * Simple on touch listener for zoom view
  */
-public class PanTouchListener implements View.OnTouchListener, PanListener {
+public class PanTouchListener implements View.OnTouchListener {
 
-	/** Scaling factor to make touch less senstive */
+	/** Scaling factor to make touch less sensitive */
     private static final float TOUCH_SCALE_FACTOR = 2.5f;
     
     /** State being controlled by touch events */
@@ -88,10 +88,6 @@ public class PanTouchListener implements View.OnTouchListener, PanListener {
     
     public void setOrientation(int orientconst) {
     	// do nothing
-    }
-    
-    public void destroy() {
-    	//mState = null;
     }
 
 }

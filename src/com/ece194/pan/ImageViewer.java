@@ -124,7 +124,7 @@ public class ImageViewer extends View implements Observer {
             mRectDst.right = getRight();
             mRectDst.bottom = getBottom();
 
-            // Adjust source rectangle so that it fits within the source image.
+            // If the source is out of bounds of the image, use the OOB rects to display the other side of the image
             if (mRectSrc.left < 0) {
             	int delta = -mRectSrc.left;
                 mRectSrc.left = 0;
