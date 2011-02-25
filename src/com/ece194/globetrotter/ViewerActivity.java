@@ -66,10 +66,10 @@ public class ViewerActivity extends Activity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
     	super.onConfigurationChanged(newConfig);
-    	if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-    		mPanListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
-    	else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+    	if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
     		mPanListener.setOrientation(Configuration.ORIENTATION_PORTRAIT);
+    	else
+    		mPanListener.setOrientation(Configuration.ORIENTATION_LANDSCAPE);
     }
 
     @Override

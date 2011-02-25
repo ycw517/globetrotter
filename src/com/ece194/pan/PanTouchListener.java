@@ -91,7 +91,7 @@ public class PanTouchListener implements View.OnTouchListener, PanListener {
     }
     
     public void destroy() {
-    	mState = null;
+    	//mState = null;
     }
 
 }
