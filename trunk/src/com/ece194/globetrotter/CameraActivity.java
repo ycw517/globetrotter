@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.hardware.Camera;
+import android.hardware.Camera.PreviewCallback;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,6 +22,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	private MediaRecorder mRecorder;
 	private Camera mCamera;
 	private boolean mPreviewRunning = false;
+	private boolean mCaptureFrame = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		previewHolder.addCallback(this);
 	    previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	    
-	    mRecorder = new MediaRecorder();
+	//    mRecorder = new MediaRecorder();
 
 	}
 
@@ -46,38 +48,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		super.onPause();
 	}
 	
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-		/*
-		mRecorder.reset();
-	    mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-	    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-	    mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
-	    mRecorder.setOutputFile("/sdcard/globetrotter/video.mp4");
-	    mRecorder.setVideoFrameRate(30);
-	    
-		mRecorder.setPreviewDisplay(previewHolder.getSurface());
-	    try {
-			mRecorder.prepare();
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-	*/	if (mPreviewRunning) mCamera.stopPreview();
-
-		Camera.Parameters p = mCamera.getParameters();
-		p.setPreviewSize(width, height);
-		mCamera.setParameters(p);
-
-		try { mCamera.setPreviewDisplay(holder); }
-		catch (IOException e) { e.printStackTrace(); }	
-
-		mCamera.startPreview();
-		mPreviewRunning = true;
-		
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,6 +58,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	}
 
 	public void startRecording() {
+		mCaptureFrame = true;
 	//	mRecorder.start();
 	}
 	
@@ -130,6 +102,66 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	@Override
 	public void onAutoFocus(boolean success, Camera camera) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	
+	/* PreviewCallback()
+	 * 
+	 * this callback captures the preview at every frame
+	 * and puts it in a byte buffer. we will evaluate if 
+	 * this is a frame that we want to process, and if so,
+	 * we will send it to an asynchronous thread that will
+	 * process it to an ARGB Bitmap and POST it to the server
+	 * 
+	*/
+	PreviewCallback previewCallback = new PreviewCallback () {
+		public void onPreviewFrame(byte[] data, Camera camera) {
+			
+			if (mCaptureFrame) {
+				mCaptureFrame = false;
+				new FrameHandler().execute(data);
+			}
+			
+			
+		}
+	};
+	
+	
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		/*
+		mRecorder.reset();
+	    mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+	    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+	    mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+	    mRecorder.setOutputFile("/sdcard/globetrotter/video.mp4");
+	    mRecorder.setVideoFrameRate(30);
+	    
+		mRecorder.setPreviewDisplay(previewHolder.getSurface());
+	    try {
+			mRecorder.prepare();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	*/	
+		if (mPreviewRunning) mCamera.stopPreview();
+
+		Camera.Parameters p = mCamera.getParameters();
+		p.setPreviewSize(width, height);
+		mCamera.setParameters(p);
+
+		try { mCamera.setPreviewDisplay(holder); }
+		catch (IOException e) { e.printStackTrace(); }	
+
+		mCamera.setPreviewCallback(previewCallback);
+		
+		
+		mCamera.startPreview();
+		mPreviewRunning = true;
 		
 	}
 	
