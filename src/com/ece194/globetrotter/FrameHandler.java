@@ -1,5 +1,7 @@
 package com.ece194.globetrotter;
 
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,28 +16,70 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
 
-public class FrameHandler {
-		
+//AsyncTask<params, progress, result>
+public class FrameHandler extends AsyncTask<byte[], Void, Void> {
+	
+
+	
+	// Final Variables
 	private final static int WIDTH = 480;
 	private final static int HEIGHT = 320;
-	private int[] argb8888;
+	private final static int ARRAY_LENGTH = 480*320;
 	
-	public FrameHandler() {
+	// pre-allocated working arrays
+	private int[] argb8888 = new int[ARRAY_LENGTH];
+	
+	// filename of image
+	int quality = 75;
+	private String filename;
+	
+	
+	// SHOULD PASS AN INT THAT SPECIFIES WHICH IMAGE THIS IS IN ORDER OF CAPTURE
+	@Override
+	protected Void doInBackground(byte[]... args) {
+		Log.v("GlobeTrotter", "Beginning AsyncTask");
 		
 		// Receive frame data
 		// Decode YUV to ARGB
 		// Create Bitmap
 		// Post to server
-		
-		
-		Bitmap bitmap = Bitmap.createBitmap(argb8888, WIDTH, HEIGHT, Config.ARGB_8888);
 
 		
+		// creates an RGB array in argb8888 from the YUV btye array
+		decodeYUV(argb8888, args[0], WIDTH, HEIGHT);
+		Bitmap bitmap = Bitmap.createBitmap(argb8888, WIDTH, HEIGHT, Config.ARGB_8888);
+		
+		try {
+			save(bitmap);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}   
+	
+	
+	public void save(Bitmap bmp) throws IOException {
+		
+		filename = "/sdcard/globetrotter/bufferdump/image.jpg";
+
+		BitmapFactory.Options options=new BitmapFactory.Options();		
+		options.inSampleSize = 20;
+		
+		FileOutputStream fos = new FileOutputStream(filename);
+		
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		bmp.compress(CompressFormat.JPEG, quality, bos);
+
+		bos.flush();
+		bos.close();		
 	}
-	
-	
 	
 	
 	// decode Y, U, and V values on the YUV 420 buffer described as YCbCr_422_SP by Android 
@@ -120,8 +164,12 @@ public class FrameHandler {
         } catch (IOException e) {  
             // TODO Auto-generated catch block  
         }  
-    }   
-	
+    }
+
+
+
+
+
 	
 	
 	
