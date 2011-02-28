@@ -1,109 +1,137 @@
 // this should be revision 21
 package com.ece194.globetrotter;
+
 import java.io.IOException;
 
 import android.app.Activity;
 import android.hardware.Camera;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
-import android.view.Surface;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
+
+	private SurfaceView preview;
+	private SurfaceHolder previewHolder;
 	
-	private SurfaceView preview=null;
-	private SurfaceHolder previewHolder=null;
-	private Camera camera=null;
-	private boolean inPreview=false;
-
+	private MediaRecorder mRecorder;
+	private Camera mCamera;
+	private boolean mPreviewRunning = false;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.capture);
 
-		preview=(SurfaceView)findViewById(R.id.preview);
-		
-		previewHolder=preview.getHolder();
-		previewHolder.addCallback(surfaceCallback);
-		previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	    preview=(SurfaceView)findViewById(R.id.preview);
+	    previewHolder=preview.getHolder();
+		previewHolder.addCallback(this);
+	    previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	    
+	    mRecorder = new MediaRecorder();
+
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		camera=Camera.open();
 	}
 
 	@Override
 	public void onPause() {
-		if (inPreview) {
-			camera.stopPreview();
-		}
-
-		camera.release();
-		camera=null;
-		inPreview=false;
-
 		super.onPause();
 	}
-
-	SurfaceHolder.Callback surfaceCallback=new SurfaceHolder.Callback() {
-		public void surfaceCreated(SurfaceHolder holder) {
-			try {
-				camera.setPreviewDisplay(previewHolder);
-			}
-			catch (Throwable t) {
-				Log.e("PreviewDemo-surfaceCallback",
-							"Exception in setPreviewDisplay()", t);
-				Toast
-					.makeText(CameraActivity.this, t.getMessage(), Toast.LENGTH_LONG)
-					.show();
-			}
+	
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		/*
+		mRecorder.reset();
+	    mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+	    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+	    mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+	    mRecorder.setOutputFile("/sdcard/globetrotter/video.mp4");
+	    mRecorder.setVideoFrameRate(30);
+	    
+		mRecorder.setPreviewDisplay(previewHolder.getSurface());
+	    try {
+			mRecorder.prepare();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-			Camera.Parameters p=camera.getParameters();
+	*/	if (mPreviewRunning) mCamera.stopPreview();
 
-			p.set("rotation", 180); 
-			previewHolder.getSurface(); 
-			Surface.setOrientation(Display.DEFAULT_DISPLAY, 
-			Surface.ROTATION_90); 
+		Camera.Parameters p = mCamera.getParameters();
+		p.setPreviewSize(width, height);
+		mCamera.setParameters(p);
 
-			p.setPreviewSize(width, height);
-			camera.setParameters(p);
-			camera.startPreview();
-			inPreview=true;
-		}
+		try { mCamera.setPreviewDisplay(holder); }
+		catch (IOException e) { e.printStackTrace(); }	
 
-		public void surfaceDestroyed(SurfaceHolder holder) {
-			// no-op
-		}
+		mCamera.startPreview();
+		mPreviewRunning = true;
 		
-		
-		
-		public void frameCapture() {
-			MediaRecorder recorder = new MediaRecorder();
-			recorder.setCamera(camera);
-			recorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
-			recorder.setOutputFormat(MediaRecorder.VideoEncoder.H264);
-			recorder.setVideoSize(320,240);
-	        try {
-				recorder.prepare();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	        recorder.start();
+	}
 
-		}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.capture_menu, menu);
+	    return true;
+	}
+
+	public void startRecording() {
+	//	mRecorder.start();
+	}
+	
+	public void stopRecording() {
+	//	mRecorder.stop();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.startRecording:
+	        startRecording();
+	        return true;
+	    case R.id.stopRecording:
+	        stopRecording();
+	        return true;
+	    default:
+	        return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		mCamera = Camera.open();
+	}
+
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		 mCamera.stopPreview();
+		 mPreviewRunning = false;
+		 mCamera.release();		
+		 
+	//	 mRecorder.reset();
+	//	 mRecorder.release();
+
+	}
+
+	@Override
+	public void onAutoFocus(boolean success, Camera camera) {
+		// TODO Auto-generated method stub
 		
-	};
+	}
+	
+
 }

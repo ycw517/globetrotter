@@ -14,4 +14,8 @@
 	<string name="use_compass">Toggle Compass Input</string>
 	<string name="use_touch">Toggle Touch Input</string>
 	
+	<string name="start">Start Recording</string>
+	<string name="stop">Stop Recording</string>
+	
+	
 </resources>
