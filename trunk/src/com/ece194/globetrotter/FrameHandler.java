@@ -33,7 +33,7 @@ public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 	private final static int WIDTH = 480;
 	private final static int HEIGHT = 320;
 	private final static int ARRAY_LENGTH = 480*320*3/2;
-	private String projectName = "globetrotter-test-01";
+	private String projectName = "globetrotter-test-02";
 	
 	// pre-allocated working arrays
 	private int[] argb8888 = new int[ARRAY_LENGTH];

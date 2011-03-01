@@ -107,7 +107,7 @@ public class ViewerActivity extends Activity {
    //     Bitmap bMap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
    //     image.setImageBitmap(bMap);
         
-        mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
+        mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama0.jpg");
         
         // create a new pan state
         mPanState = new PanState();

@@ -89,7 +89,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
         try {  
             // Add your data  
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);  
-            nameValuePairs.add(new BasicNameValuePair("project", "globetrotter-test-01"));  
+            nameValuePairs.add(new BasicNameValuePair("project", "globetrotter-test-02"));  
             nameValuePairs.add(new BasicNameValuePair("width", "480"));  
             nameValuePairs.add(new BasicNameValuePair("height", "320"));  
             nameValuePairs.add(new BasicNameValuePair("eFocal", "36"));  
