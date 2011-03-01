@@ -2,12 +2,26 @@
 package com.ece194.globetrotter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,6 +37,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	private Camera mCamera;
 	private boolean mPreviewRunning = false;
 	private boolean mCaptureFrame = false;
+	private int frame_number = 0;
+	private byte[] frame = new byte[1];
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,6 +49,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 	    previewHolder=preview.getHolder();
 		previewHolder.addCallback(this);
 	    previewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+	    
+	    
 	    
 	//    mRecorder = new MediaRecorder();
 
@@ -59,11 +77,41 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 
 	public void startRecording() {
 		mCaptureFrame = true;
+		
 	//	mRecorder.start();
 	}
 	
 	public void stopRecording() {
 	//	mRecorder.stop();
+        HttpClient httpclient = new DefaultHttpClient();  
+        HttpPost httppost = new HttpPost("http://dragonox.cs.ucsb.edu/Mosaic3D/process.php");
+      
+        try {  
+            // Add your data  
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(6);  
+            nameValuePairs.add(new BasicNameValuePair("project", "globetrotter-test-01"));  
+            nameValuePairs.add(new BasicNameValuePair("width", "480"));  
+            nameValuePairs.add(new BasicNameValuePair("height", "320"));  
+            nameValuePairs.add(new BasicNameValuePair("eFocal", "36"));  
+            nameValuePairs.add(new BasicNameValuePair("loop", "1"));  
+            nameValuePairs.add(new BasicNameValuePair("email", "brian.dunlay@gmail.com"));  
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+      
+            // Execute HTTP Post Request  
+            HttpResponse response = httpclient.execute(httppost);  
+              
+            
+            HttpEntity resEntity = response.getEntity();  
+            if (resEntity != null) {    
+                      Log.i("BEGIN RESPONSE",EntityUtils.toString(resEntity));
+                }
+        } catch (ClientProtocolException e) {  
+            // TODO Auto-generated catch block  
+        } catch (IOException e) {  
+            // TODO Auto-generated catch block  
+        }  
+
+		
 	}
 	
 	@Override
@@ -120,7 +168,9 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 			
 			if (mCaptureFrame) {
 				mCaptureFrame = false;
-				new FrameHandler().execute(data);
+				frame[0] = (byte)frame_number;
+				new FrameHandler().execute(data, frame);
+				frame_number++;
 			}
 			
 			
@@ -158,6 +208,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback, 
 		catch (IOException e) { e.printStackTrace(); }	
 
 		mCamera.setPreviewCallback(previewCallback);
+		
 		
 		
 		mCamera.startPreview();
