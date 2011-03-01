@@ -4,7 +4,7 @@
 	android:layout_height="fill_parent" android:id="@+id/captureLayout">
 
 	<SurfaceView android:id="@+id/preview"	
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"/>
+		android:layout_width="480px"
+		android:layout_height="320px"/>
 		
 </RelativeLayout>	

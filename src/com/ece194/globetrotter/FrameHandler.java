@@ -1,36 +1,39 @@
 package com.ece194.globetrotter;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
 //AsyncTask<params, progress, result>
-public class FrameHandler extends AsyncTask<byte[], Void, Void> {
+public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 	
 
 	
 	// Final Variables
 	private final static int WIDTH = 480;
 	private final static int HEIGHT = 320;
-	private final static int ARRAY_LENGTH = 480*320;
+	private final static int ARRAY_LENGTH = 480*320*3/2;
+	private String projectName = "globetrotter-test-01";
 	
 	// pre-allocated working arrays
 	private int[] argb8888 = new int[ARRAY_LENGTH];
@@ -39,11 +42,15 @@ public class FrameHandler extends AsyncTask<byte[], Void, Void> {
 	int quality = 75;
 	private String filename;
 	
+	int imageIndex = 0;
+	
 	
 	// SHOULD PASS AN INT THAT SPECIFIES WHICH IMAGE THIS IS IN ORDER OF CAPTURE
 	@Override
-	protected Void doInBackground(byte[]... args) {
+	protected Boolean doInBackground(byte[]... args) {
 		Log.v("GlobeTrotter", "Beginning AsyncTask");
+		
+		imageIndex = args[1][0];
 		
 		// Receive frame data
 		// Decode YUV to ARGB
@@ -55,22 +62,33 @@ public class FrameHandler extends AsyncTask<byte[], Void, Void> {
 		decodeYUV(argb8888, args[0], WIDTH, HEIGHT);
 		Bitmap bitmap = Bitmap.createBitmap(argb8888, WIDTH, HEIGHT, Config.ARGB_8888);
 		
+		filename = "/sdcard/globetrotter/bufferdump/" + (args[1][0]) +".jpg";
+
+		
+		// save a jpeg file locally
 		try {
 			save(bitmap);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		// upload that file to the server
+		postData();
+		
+		return true;
 	}   
+	
+
+
+
+
 	
 	
 	public void save(Bitmap bmp) throws IOException {
 		
-		filename = "/sdcard/globetrotter/bufferdump/image.jpg";
 
-		BitmapFactory.Options options=new BitmapFactory.Options();		
-		options.inSampleSize = 20;
+//		BitmapFactory.Options options=new BitmapFactory.Options();		
+	//	options.inSampleSize = 20;
 		
 		FileOutputStream fos = new FileOutputStream(filename);
 		
@@ -145,9 +163,45 @@ public class FrameHandler extends AsyncTask<byte[], Void, Void> {
 	
 	
     public void postData() {  
-        // Create a new HttpClient and Post Header  
+    	//http://www.softwarepassion.com/android-series-get-post-and-multipart-post-requests/
+        File f = new File(filename);
+        try {
+                 HttpClient client = new DefaultHttpClient();  
+                 String postURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/clientupload.php";
+
+    
+                 
+                 HttpPost post = new HttpPost(postURL); 
+
+	             FileBody bin = new FileBody(f);
+	             MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);  
+	             reqEntity.addPart("file", bin);
+	             
+	             // http://stackoverflow.com/questions/2607020/help-constructing-a-post-request-with-multipartentity-newbie-question
+	             
+	             reqEntity.addPart("project", new StringBody(projectName));
+	             reqEntity.addPart("name", new StringBody(Integer.toString(imageIndex)));
+
+	             post.setEntity(reqEntity); 
+	             
+	             HttpResponse response = client.execute(post);  
+	             HttpEntity resEntity = response.getEntity();  
+	             if (resEntity != null) {    
+	                       Log.i("RESPONSE",EntityUtils.toString(resEntity));
+	                 }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        
+    }
+    
+    
+    
+    
+    /*     // Create a new HttpClient and Post Header  
         HttpClient httpclient = new DefaultHttpClient();  
-        HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");  
+        HttpPost httppost = new HttpPost("http://dragonox.cs.ucsb.edu/Mosaic3D/clientupload.php?project="+projectName+"&name="+imageName);  
       
         try {  
             // Add your data  
@@ -163,10 +217,7 @@ public class FrameHandler extends AsyncTask<byte[], Void, Void> {
             // TODO Auto-generated catch block  
         } catch (IOException e) {  
             // TODO Auto-generated catch block  
-        }  
-    }
-
-
+        }  */
 
 
 
