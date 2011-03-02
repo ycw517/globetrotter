@@ -17,7 +17,9 @@
 	
 		
 		
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
+    
+    
         <activity android:name=".GlobeTrotter"
                   android:label="@string/app_name">
             <intent-filter>
@@ -33,6 +35,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        
+        <activity android:name="com.ece194.globetrotter.TagSelectorActivity">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
 
         <activity android:name="com.ece194.globetrotter.ViewerActivity"
         		 android:label="@string/view_tags" android:configChanges="orientation|keyboardHidden">
