@@ -44,6 +44,14 @@ public class GlobeTrotter extends Activity {
 	    startActivityForResult(intent, VIEWER);
 	}
 	
+	public void debugViewer(View v){
+	    // Start the activity whose result we want to retrieve.  The
+	    // result will come back with request code GET_CODE.
+	    Intent intent = new Intent(this, ViewerActivity.class);
+	    startActivityForResult(intent, VIEWER);
+	}
+
+	
 	// Listen for results.
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 	    // See which child activity is calling us back.
