@@ -17,5 +17,8 @@
 	<string name="start">Capture Frame</string>
 	<string name="stop">Begin Processing</string>
 	
+	<string name="yourTags">Your Tags</string>
+	<string name="allTags">Everyone\'s Tags</string>
+	
 	
 </resources>

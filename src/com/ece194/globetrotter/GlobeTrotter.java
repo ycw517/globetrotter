@@ -40,7 +40,7 @@ public class GlobeTrotter extends Activity {
 	public void view(View v){
 	    // Start the activity whose result we want to retrieve.  The
 	    // result will come back with request code GET_CODE.
-	    Intent intent = new Intent(this, ViewerActivity.class);
+	    Intent intent = new Intent(this, TagSelectorActivity.class);
 	    startActivityForResult(intent, VIEWER);
 	}
 	
