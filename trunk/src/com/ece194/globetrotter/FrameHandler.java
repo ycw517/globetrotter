@@ -33,7 +33,7 @@ public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 	private final static int WIDTH = 480;
 	private final static int HEIGHT = 320;
 	private final static int ARRAY_LENGTH = 480*320*3/2;
-	private String projectName = "globetrotter-test-05";
+	private String projectName = "globetrotter-test-07";
 	
 	// pre-allocated working arrays
 	private int[] argb8888 = new int[ARRAY_LENGTH];
@@ -45,7 +45,6 @@ public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 	int imageIndex = 0;
 	
 	
-	// SHOULD PASS AN INT THAT SPECIFIES WHICH IMAGE THIS IS IN ORDER OF CAPTURE
 	@Override
 	protected Boolean doInBackground(byte[]... args) {
 		Log.v("GlobeTrotter", "Beginning AsyncTask");
@@ -77,12 +76,6 @@ public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 		
 		return true;
 	}   
-	
-
-
-
-
-	
 	
 	public void save(Bitmap bmp) throws IOException {
 		
@@ -194,35 +187,5 @@ public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
         }
 
         
-    }
-    
-    
-    
-    
-    /*     // Create a new HttpClient and Post Header  
-        HttpClient httpclient = new DefaultHttpClient();  
-        HttpPost httppost = new HttpPost("http://dragonox.cs.ucsb.edu/Mosaic3D/clientupload.php?project="+projectName+"&name="+imageName);  
-      
-        try {  
-            // Add your data  
-            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);  
-            nameValuePairs.add(new BasicNameValuePair("id", "12345"));  
-            nameValuePairs.add(new BasicNameValuePair("stringdata", "AndDev is Cool!"));  
-            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
-      
-            // Execute HTTP Post Request  
-            HttpResponse response = httpclient.execute(httppost);  
-              
-        } catch (ClientProtocolException e) {  
-            // TODO Auto-generated catch block  
-        } catch (IOException e) {  
-            // TODO Auto-generated catch block  
-        }  */
-
-
-
-	
-	
-	
-	
+    }	
 }
