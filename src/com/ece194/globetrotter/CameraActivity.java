@@ -1,6 +1,9 @@
 // this should be revision 21
 package com.ece194.globetrotter;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,12 +19,26 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap.Config;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.media.MediaRecorder;
@@ -36,16 +53,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
 
-	public String project_name = "globetrotter-test-05";
-	
+	public static String project_name = "globetrotter-test-09";
 	
 	private SurfaceView preview;
 	private SurfaceHolder previewHolder;
 	
-	private MediaRecorder mRecorder;
 	private Camera mCamera;
 	private boolean mPreviewRunning = false;
 	private boolean mCaptureFrame = false;
@@ -56,8 +72,14 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	
 	private TextView mPreviewText;
 	
+	private AlertDialog.Builder builder;
+	
 	ProgressDialog  pDialogue;
 	
+	String ns = Context.NOTIFICATION_SERVICE;
+	NotificationManager mNotificationManager;
+	private static final int HELLO_ID = 1;
+	Notification notification;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -71,15 +93,43 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	    
 	    mPreviewText=(TextView)findViewById(R.id.previewText);
 	    mPreviewText.setText("Frames Captured: " + frame_number);
+	    
+	    
+	    
 	    //getDateTime() //for timestamping the project 
 	    pDialogue = new ProgressDialog( CameraActivity.this );
-	    pDialogue.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-	    pDialogue.setMessage("Loading...");
+	    pDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+	    pDialogue.setMessage("Starting processing...");
 	    pDialogue.setCancelable(false);
     	pDialogue.setProgress(0);
 
 
+    	
+    	
+    	mNotificationManager = (NotificationManager) getSystemService(ns);
+    	int icon = R.drawable.view_normal;
+    	CharSequence tickerText = "Your panorama is ready";
+    	long when = System.currentTimeMillis();
+    	notification = new Notification(icon, tickerText, when);
+    	Context context = getApplicationContext();
+    	CharSequence contentTitle = "GlobeTrotter";
+    	CharSequence contentText = "Your panorama is ready! Touch to view.";
+    	Intent notificationIntent = new Intent(this, CameraActivity.class);
+    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 
+    	
+    	builder = new AlertDialog.Builder(this);
+    	builder.setTitle("Failed!");
+    	builder.setMessage("Sorry, but we couldn't process your images. Please try again! ")
+    	       .setCancelable(false)
+    	       .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    	           public void onClick(DialogInterface dialog, int id) {
+    	                CameraActivity.this.finish();
+    	           }
+    	       });
+		builder.create();
+		
 	   	}
 
 	@Override
@@ -265,55 +315,222 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
     	
 		mPreviewRunning = false;
 		mCamera.stopPreview();
-
 		pDialogue.show();
+
+		
+    	Toast.makeText(getApplicationContext(), "Your panorama is processing.", Toast.LENGTH_LONG);
+    //	finish();
 
 		new DownloadFilesTask().execute();
     }
     
     private class DownloadFilesTask extends AsyncTask<Void, Integer, Void> {
-    	
+    	 boolean fail = false;
 
         protected Void doInBackground(Void... urls) {
         	int response = 0;
-        	// should clean this up so it doesn't create so many objects
-        	while (response != 100) {
-	        	try {
-	                HttpClient client = new DefaultHttpClient();  
-	                String getURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/"+ project_name +"/status.txt";
-	                HttpGet get = new HttpGet(getURL);
-	                HttpResponse responseGet = client.execute(get);  
-	                HttpEntity resEntityGet = responseGet.getEntity();  
-	                if (resEntityGet != null) {  
-	                    //do something with the response
-	                	response = Integer.valueOf(EntityUtils.toString(resEntityGet).trim());
-	                    Log.i("GET RESPONSE","RESPONSE IS = " + response);
-	                    publishProgress(response);
-	                }
-		        } catch (Exception e) {
-		            Log.i("Y U NO WORK?",e.toString());
-	
-		        }
-        	}
-        	        	
+
+            try {
+                Thread.currentThread().sleep(2000);
+                }
+              catch (InterruptedException e) {
+                e.printStackTrace();
+                }
+        	
+        	
+        	try {
+                HttpClient client = new DefaultHttpClient();  
+                String getURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/"+ project_name +"/status.txt";
+                HttpGet get = new HttpGet(getURL);
+                HttpResponse responseGet = client.execute(get);  
+                HttpEntity resEntityGet = responseGet.getEntity();  
+                if (resEntityGet != null) {  
+                	response = Integer.valueOf(EntityUtils.toString(resEntityGet).trim());
+                    Log.i("GET RESPONSE","RESPONSE IS = " + response);
+                    publishProgress(response);
+                }
+	        } catch (Exception e) {
+	            Log.i("Y U NO WORK?",e.toString());
+	            fail = true;
+	        }
 			return null;
         }
 
+        protected void onPreExecute() {
+        }
+        
+        
         protected void onProgressUpdate(Integer... progress) {     
-            Log.i("UPDATE","UPDATE = ");
- 
-        	pDialogue.setProgress(progress[0]);
+            Log.i("UPDATE","UPDATE = " + progress[0]);
+            
+            pDialogue.dismiss();
+            
+             switch (progress[0]) {
+             
+                case -1:  break;			
+                default: break;
+  
+            }
+             
 
+             
         }
 
         protected void onPostExecute(Void blah) {
             Log.i("COMPLETE","COMPLETE");
+        	if (fail) {
+//        		builder.show();
+        	}
+        	
+        	 setResult(RESULT_OK);
+              finish();
 
-        	pDialogue.dismiss();
-        	finish(); // this could also start an intent to another activity, like a list, and then finish here
+        	
+        	mNotificationManager.notify(HELLO_ID, notification);
+
+        	//finish(); // this could also start an intent to another activity, like a list, and then finish here
         }
     }
 
-    
+    public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {
 
+    	// Final Variables
+    	private final static int WIDTH = 480;
+    	private final static int HEIGHT = 320;
+    	private final static int ARRAY_LENGTH = 480*320*3/2;
+    	
+    	// pre-allocated working arrays
+    	private int[] argb8888 = new int[ARRAY_LENGTH];
+    	
+    	// filename of image
+    	int quality = 75;
+    	private String filename;
+    	int imageIndex = 0;
+    	
+    	@Override
+    	protected Boolean doInBackground(byte[]... args) {
+    		Log.v("GlobeTrotter", "Beginning AsyncTask");
+    		
+    		imageIndex = args[1][0];
+    		filename = "/sdcard/globetrotter/bufferdump/" + (args[1][0]) +".jpg";
+
+    		// creates an RGB array in argb8888 from the YUV btye array
+    		decodeYUV(argb8888, args[0], WIDTH, HEIGHT);
+    		Bitmap bitmap = Bitmap.createBitmap(argb8888, WIDTH, HEIGHT, Config.ARGB_8888);
+    		
+    		// save a jpeg file locally
+    		try {
+    			save(bitmap);
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+
+    		// upload that file to the server
+    		postData();
+    		
+    		return true;
+    	}   
+    	
+    	public void save(Bitmap bmp) throws IOException {
+    		//  BitmapFactory.Options options=new BitmapFactory.Options();		
+    		//	options.inSampleSize = 20;
+    		
+    		FileOutputStream fos = new FileOutputStream(filename);
+    		
+    		BufferedOutputStream bos = new BufferedOutputStream(fos);
+    		bmp.compress(CompressFormat.JPEG, quality, bos);
+
+    		bos.flush();
+    		bos.close();		
+    	}
+    	
+    	// decode Y, U, and V values on the YUV 420 buffer described as YCbCr_422_SP by Android 
+    	// David Manpearl 081201 
+    	public void decodeYUV(int[] out, byte[] fg, int width, int height)
+    	        throws NullPointerException, IllegalArgumentException {
+    	    int sz = width * height;
+    	    if (out == null)
+    	        throw new NullPointerException("buffer out is null");
+    	    if (out.length < sz)
+    	        throw new IllegalArgumentException("buffer out size " + out.length
+    	                + " < minimum " + sz);
+    	    if (fg == null)
+    	        throw new NullPointerException("buffer 'fg' is null");
+    	    if (fg.length < sz)
+    	        throw new IllegalArgumentException("buffer fg size " + fg.length
+    	                + " < minimum " + sz * 3 / 2);
+    	    int i, j;
+    	    int Y, Cr = 0, Cb = 0;
+    	    for (j = 0; j < height; j++) {
+    	        int pixPtr = j * width;
+    	        final int jDiv2 = j >> 1;
+    	        for (i = 0; i < width; i++) {
+    	            Y = fg[pixPtr];
+    	            if (Y < 0)
+    	                Y += 255;
+    	            if ((i & 0x1) != 1) {
+    	                final int cOff = sz + jDiv2 * width + (i >> 1) * 2;
+    	                Cb = fg[cOff];
+    	                if (Cb < 0)
+    	                    Cb += 127;
+    	                else
+    	                    Cb -= 128;
+    	                Cr = fg[cOff + 1];
+    	                if (Cr < 0)
+    	                    Cr += 127;
+    	                else
+    	                    Cr -= 128;
+    	            }
+    	            int R = Y + Cr + (Cr >> 2) + (Cr >> 3) + (Cr >> 5);
+    	            if (R < 0)
+    	                R = 0;
+    	            else if (R > 255)
+    	                R = 255;
+    	            int G = Y - (Cb >> 2) + (Cb >> 4) + (Cb >> 5) - (Cr >> 1)
+    	                    + (Cr >> 3) + (Cr >> 4) + (Cr >> 5);
+    	            if (G < 0)
+    	                G = 0;
+    	            else if (G > 255)
+    	                G = 255;
+    	            int B = Y + Cb + (Cb >> 1) + (Cb >> 2) + (Cb >> 6);
+    	            if (B < 0)
+    	                B = 0;
+    	            else if (B > 255)
+    	                B = 255;
+    	            out[pixPtr++] = 0xff000000 + (B << 16) + (G << 8) + R;
+    	        }
+    	    }
+
+    	}
+
+        public void postData() {  
+        	//http://www.softwarepassion.com/android-series-get-post-and-multipart-post-requests/
+            File f = new File(filename);
+            try {
+                     HttpClient client = new DefaultHttpClient();  
+                     String postURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/clientupload.php";
+
+                     HttpPost post = new HttpPost(postURL); 
+
+    	             FileBody bin = new FileBody(f);
+    	             MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);  
+    	             reqEntity.addPart("file", bin);
+    	             
+    	             // http://stackoverflow.com/questions/2607020/help-constructing-a-post-request-with-multipartentity-newbie-question
+    	             
+    	             reqEntity.addPart("project", new StringBody(project_name));
+    	             reqEntity.addPart("name", new StringBody(Integer.toString(imageIndex)));
+
+    	             post.setEntity(reqEntity); 
+    	             
+    	             HttpResponse response = client.execute(post);  
+    	             HttpEntity resEntity = response.getEntity();  
+    	             if (resEntity != null) {    
+    	                       Log.i("RESPONSE",EntityUtils.toString(resEntity));
+    	                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }    	
+    }
 }
