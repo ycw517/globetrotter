@@ -57,7 +57,16 @@ import android.widget.Toast;
 
 public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
 
-	public static String project_name = "globetrotter-test-09";
+	public String project_name = GlobeTrotter.project_name;
+
+	public static String loop = "0";
+	public static String email ="william.r.moy@gmail.com";
+	
+	
+	
+	
+	
+	
 	
 	private SurfaceView preview;
 	private SurfaceHolder previewHolder;
@@ -94,9 +103,6 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	    mPreviewText=(TextView)findViewById(R.id.previewText);
 	    mPreviewText.setText("Frames Captured: " + frame_number);
 	    
-	    
-	    
-	    //getDateTime() //for timestamping the project 
 	    pDialogue = new ProgressDialog( CameraActivity.this );
 	    pDialogue.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 	    pDialogue.setMessage("Starting processing...");
@@ -182,8 +188,8 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
             nameValuePairs.add(new BasicNameValuePair("width", "480"));  
             nameValuePairs.add(new BasicNameValuePair("height", "320"));  
             nameValuePairs.add(new BasicNameValuePair("eFocal", "36"));  
-            nameValuePairs.add(new BasicNameValuePair("loop", "1"));  
-            nameValuePairs.add(new BasicNameValuePair("email", "brian.dunlay@gmail.com"));  
+            nameValuePairs.add(new BasicNameValuePair("loop", loop));  
+            nameValuePairs.add(new BasicNameValuePair("email", email));  
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
       
             // Execute HTTP Post Request  
@@ -304,21 +310,16 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		
 	}
 	
-    private String getDateTime() {
-        DateFormat dateFormat = new SimpleDateFormat("H,H,m,m,s,s");
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
     
     public void toast(View v){
     	stopRecording();
     	
 		mPreviewRunning = false;
 		mCamera.stopPreview();
-		pDialogue.show();
+	//	pDialogue.show();
 
 		
-    	Toast.makeText(getApplicationContext(), "Your panorama is processing.", Toast.LENGTH_LONG);
+    //	Toast.makeText(getApplicationContext(), "Your panorama is processing.", Toast.LENGTH_LONG);
     //	finish();
 
 		new DownloadFilesTask().execute();
@@ -330,13 +331,13 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
         protected Void doInBackground(Void... urls) {
         	int response = 0;
 
-            try {
+           /* try {
                 Thread.currentThread().sleep(2000);
                 }
               catch (InterruptedException e) {
                 e.printStackTrace();
                 }
-        	
+        	*/
         	
         	try {
                 HttpClient client = new DefaultHttpClient();  
@@ -386,7 +387,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
               finish();
 
         	
-        	mNotificationManager.notify(HELLO_ID, notification);
+       // 	mNotificationManager.notify(HELLO_ID, notification);
 
         	//finish(); // this could also start an intent to another activity, like a list, and then finish here
         }

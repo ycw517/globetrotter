@@ -1,6 +1,8 @@
 package com.ece194.globetrotter;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -103,11 +105,28 @@ public class ViewerActivity extends Activity {
 
         setContentView(R.layout.viewer);
         
+    	String ns = Context.NOTIFICATION_SERVICE;
+    	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
+    	mNotificationManager.cancelAll();
+
+        
+        
    //     ImageView image = (ImageView) findViewById(R.id.left_view);
    //     Bitmap bMap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama.jpg");
    //     image.setImageBitmap(bMap);
         
-        mBitmap = BitmapFactory.decodeFile("/sdcard/globetrotter/panorama0.jpg");
+    	Bundle extras = getIntent().getExtras(); 
+    	String userName;
+    	String filename;
+    	if (extras != null) {
+    	    filename = extras.getString("filename");
+    	    // and get whatever type user account id is
+    	} else {
+    		filename = "/sdcard/globetrotter/mytags/mosaic.jpg";
+    	}
+
+    	
+        mBitmap = BitmapFactory.decodeFile(filename);
         
         // create a new pan state
         mPanState = new PanState();

@@ -1,12 +1,25 @@
 // this should be revision 21
 package com.ece194.globetrotter;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
+
 
 import android.app.Activity;
 import android.app.Notification;
@@ -23,14 +36,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-
-
 public class GlobeTrotter extends Activity {
 	
-	public String project_name = CameraActivity.project_name;
 	
-//	public String project_name = "globetrotter-test-08";
+	public static String timestamp;
 	
+	public static String project_name = "globetrotter-" + timestamp; 
+
+		
 	public final static int CAPTURE = 100;
 	public final static int VIEWER = 200;
 	public final static int LIST = 300;
@@ -42,8 +55,8 @@ public class GlobeTrotter extends Activity {
 	Notification notification;
 	private static final int HELLO_ID = 1;
 
-    /** Called when the activity is first created. */
-    @Override
+	
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
@@ -53,6 +66,8 @@ public class GlobeTrotter extends Activity {
 	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	    //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
+	    
+	    /* Status Bar Notification Initializations */
     	mNotificationManager = (NotificationManager) getSystemService(ns);
     	int icon = R.drawable.view_normal;
     	CharSequence tickerText = "Your panorama is ready";
@@ -61,49 +76,36 @@ public class GlobeTrotter extends Activity {
     	Context context = getApplicationContext();
     	CharSequence contentTitle = "GlobeTrotter";
     	CharSequence contentText = "Your panorama is ready! Touch to view.";
-    	Intent notificationIntent = new Intent(this, CameraActivity.class);
+    	Intent notificationIntent = new Intent(this, ViewerActivity.class);
+    	notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/"+ project_name+".jpg");
     	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-
-        
-     // Register the listener with the Location Manager to receive location updates
-
     }
 
     
-	public void makeToast(View view) {
-		Context context = getApplicationContext();
-		int duration = Toast.LENGTH_SHORT;
-		String text = "Don't touch me!";
-		Toast.makeText(context, text, duration).show();
-	}
-	
-	// Open the new screen.
-	public void capture(View v){
-	    // Start the activity whose result we want to retrieve.  The
-	    // result will come back with request code GET_CODE.
+    
+    
+    
+    /* Dashboard Actions */
+    
+   	public void capture(View v){
+   		
+	    timestamp = getDateTime(); //for timestamping the project 
+   		
 	    Intent intent = new Intent(this, CameraActivity.class);
 	    startActivityForResult(intent, CAPTURE);
 	}
 	
-	
 	public void view(View v){
-	    // Start the activity whose result we want to retrieve.  The
-	    // result will come back with request code GET_CODE.
 	    Intent intent = new Intent(this, TagSelectorActivity.class);
 	    startActivityForResult(intent, LIST);
 	}
 	
 	public void debugViewer(View v){
-	    // Start the activity whose result we want to retrieve.  The
-	    // result will come back with request code GET_CODE.
-
 	    Intent intent = new Intent(this, ViewerActivity.class);
 	    startActivityForResult(intent, VIEWER);
 	}
 
-	
-	// Listen for results.
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		
 	    switch (requestCode) {
@@ -111,6 +113,7 @@ public class GlobeTrotter extends Activity {
 	            if (resultCode == RESULT_CANCELED){
 	            } 
 	            else {
+	        		new DownloadPanoramaTask().execute();
 	            	Toast.makeText(getApplicationContext(), "We will notify you when the picture is ready!", Toast.LENGTH_LONG).show();
 	            }
 	        case VIEWER:
@@ -125,16 +128,11 @@ public class GlobeTrotter extends Activity {
 	}
     
 	
+	/* GeoLocation Listeners */
 	
-	// Define a listener that responds to location updates
 	LocationListener locationListener = new LocationListener() {
 	    public void onLocationChanged(Location location) {
-	      // Called when a new location is found by the network location provider.
-	     
-	     Context context = getApplicationContext();
-	     
-	     Toast.makeText(context, "Location: " + Double.toString(location.getLongitude()) + ", " + Double.toString(location.getLatitude()) , Toast.LENGTH_LONG).show();
-
+	     Toast.makeText(getApplicationContext(), "Location: " + Double.toString(location.getLongitude()) + ", " + Double.toString(location.getLatitude()) , Toast.LENGTH_LONG).show();
 	    }
 
 	    public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -144,53 +142,111 @@ public class GlobeTrotter extends Activity {
 	    public void onProviderDisabled(String provider) {}
 	  };
 
-    
-	
-	
-	private class DownloadFilesTask extends AsyncTask<Void, Integer, Void> {
-		boolean fail = false;
-	
-	    protected Void doInBackground(Void... urls) {
-	    	int response = 0;
-	    	while (response != 100) {
-	    		
-	            try {
-	                Thread.currentThread().sleep(2000);
-	                }
-	              catch (InterruptedException e) {
-	                e.printStackTrace();
-	                }
-	    		
-	    	try {
-	            HttpClient client = new DefaultHttpClient();  
-	            String getURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/"+ project_name +"/status.txt";
-	            HttpGet get = new HttpGet(getURL);
-	            HttpResponse responseGet = client.execute(get);  
-	            HttpEntity resEntityGet = responseGet.getEntity();  
-	            if (resEntityGet != null) {  
-	            	response = Integer.valueOf(EntityUtils.toString(resEntityGet).trim());
-	                Log.i("GET RESPONSE","RESPONSE IS = " + response);
-	       //         publishProgress(response);
-	            }
-	        } catch (Exception e) {
-	            Log.i("Y U NO WORK?",e.toString());
-	        }
-	        
-	    	}
-			return null;
+	   	private String getDateTime() {
+	        DateFormat dateFormat = new SimpleDateFormat("y-M-d-H-H-m-m-s-s");
+	        Date date = new Date();
+	        return dateFormat.format(date);
 	    }
+
+	
+	  
+	  public class DownloadPanoramaTask extends AsyncTask<Void, Integer, Void> {
+		  boolean fail = false;
+
+		  protected Void doInBackground(Void... urls) {
+			  int response = 0;
+			  while (response != 100) {
+	    		
+				  try { Thread.currentThread().sleep(2000); }
+				  catch (InterruptedException e) { e.printStackTrace(); }
+		            
+				  try {
+					  HttpClient client = new DefaultHttpClient();  
+					  String getURL = "http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/"+ project_name +"/status.txt";
+					  HttpGet get = new HttpGet(getURL);
+					  HttpResponse responseGet = client.execute(get);  
+					  HttpEntity resEntityGet = responseGet.getEntity();  
+					  if (resEntityGet != null) {  
+						  response = Integer.valueOf(EntityUtils.toString(resEntityGet).trim());
+						  Log.i("GLOBETROTTER ", response + "%");
+
+						  if (response == -1) {
+							  fail = true; break; 
+						  }
+					  }
+				  } catch (Exception e) { Log.i("Y U NO WORK?",e.toString()); }
+			  }
+
+			  if (!fail) DownloadFromUrl(); 
+				
+			  return null;
+		  }
 	
 	    protected void onPreExecute() {
 	    }
 	
 	    protected void onPostExecute(Void blah) {
 	    	
-	    	mNotificationManager.notify(HELLO_ID, notification);
-	
-	    	//finish(); // this could also start an intent to another activity, like a list, and then finish here
+	    	if (fail){
+	            Log.i("GLOBETROTTER", "FAILED!");
+	    		Toast.makeText(getApplicationContext(), "Failed.", Toast.LENGTH_LONG).show();
+	    	}
+	    	else {
+	            Log.i("GLOBETROTTER", "DID NOT FAIL!");
+	    		mNotificationManager.notify(HELLO_ID, notification);
+	    	}
 	    }
-	}
-	
-		  
-	  
+	    
+
+	    public void DownloadFromUrl() {  //this is the downloader method
+            try {
+            		
+                URL url = new URL("http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/" + project_name + "/mosaic.jpg" );
+                File file = new File("/sdcard/globetrotter/mytags/"+project_name+".jpg");
+
+                long startTime = System.currentTimeMillis();
+                Log.d("ImageManager", "download begining");
+                Log.d("ImageManager", "download url:" + url);
+                Log.d("ImageManager", "downloaded file name:" + project_name);
+              
+                /* Open a connection to that URL. */
+                URLConnection ucon = url.openConnection();
+                Log.d("ImageManager", "Connection opened");
+
+                /*
+                 * Define InputStreams to read from the URLConnection.
+                 */
+                
+                Log.d("ImageManager", "Getting input stream");
+                
+                InputStream is = ucon.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is);
+                
+                Log.d("ImageManager", "Creating bytearraybuffer");
+
+                /*
+                 * Read bytes to the Buffer until there is nothing more to read(-1).
+                 */
+                ByteArrayBuffer baf = new ByteArrayBuffer(5000);
+                FileOutputStream fos = new FileOutputStream(file);
+                Log.d("ImageManager", "Downloading file...");
+
+                int current = 0;
+                while ((current = bis.read()) != -1) {
+                        baf.append((byte) current);
+                        fos.write(baf.toByteArray());
+                        baf.clear();
+                }
+
+                /* Convert the Bytes read to a String. */
+                fos.close();
+                Log.d("ImageManager", "download ready in"
+                                + ((System.currentTimeMillis() - startTime) / 1000)
+                                + " sec");
+
+            } catch (IOException e) {
+                    Log.d("ImageManager", "Error: " + e);
+            }
+	    } 
+	}  
 }
