@@ -1,68 +1,178 @@
 package com.ece194.globetrotter;
 
+import java.io.File;
+
 import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 
 	public class ListView extends ListActivity {
 		
-		  final String[] COUNTRIES = new String[] {
-			    "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
-			    "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina",
-			    "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan",
-			    "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
-			    "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia",
-			    "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory",
-			    "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
-			    "Cote d'Ivoire", "Cambodia", "Cameroon", "Canada", "Cape Verde",
-			    "Cayman Islands", "Central African Republic", "Chad", "Chile", "China",
-			    "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo",
-			    "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic",
-			    "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-			    "East Timor", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea",
-			    "Estonia", "Ethiopia", "Faeroe Islands", "Falkland Islands", "Fiji", "Finland",
-			    "Former Yugoslav Republic of Macedonia", "France", "French Guiana", "French Polynesia",
-			    "French Southern Territories", "Gabon", "Georgia", "Germany", "Ghana", "Gibraltar",
-			    "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guinea", "Guinea-Bissau",
-			    "Guyana", "Haiti", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary",
-			    "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica",
-			    "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos",
-			    "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-			    "Macau", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands",
-			    "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia", "Moldova",
-			    "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia",
-			    "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand",
-			    "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Korea", "Northern Marianas",
-			    "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru",
-			    "Philippines", "Pitcairn Islands", "Poland", "Portugal", "Puerto Rico", "Qatar",
-			    "Reunion", "Romania", "Russia", "Rwanda", "Sqo Tome and Principe", "Saint Helena",
-			    "Saint Kitts and Nevis", "Saint Lucia", "Saint Pierre and Miquelon",
-			    "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Saudi Arabia", "Senegal",
-			    "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
-			    "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Korea",
-			    "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Swaziland", "Sweden",
-			    "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "The Bahamas",
-			    "The Gambia", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey",
-			    "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Virgin Islands", "Uganda",
-			    "Ukraine", "United Arab Emirates", "United Kingdom",
-			    "United States", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan",
-			    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Wallis and Futuna", "Western Sahara",
-			    "Yemen", "Yugoslavia", "Zambia", "Zimbabwe"
-			  };
+		
+		   static File dir = new File("/sdcard/globetrotter/mytags");
+		   static String[] TAGS = dir.list();
+		
+		
+	    private static class EfficientAdapter extends BaseAdapter {
+	        private LayoutInflater mInflater;
+
+	        public EfficientAdapter(Context context) {
+	            // Cache the LayoutInflate to avoid asking for a new one each time.
+	            mInflater = LayoutInflater.from(context);
+	        }
+
+	        /**
+	         * The number of items in the list is determined by the number of speeches
+	         * in our array.
+	         *
+	         * @see android.widget.ListAdapter#getCount()
+	         */
+	        public int getCount() {
+	            return TAGS.length;
+	        }
+
+	        /**
+	         * Since the data comes from an array, just returning the index is
+	         * sufficent to get at the data. If we were using a more complex data
+	         * structure, we would return whatever object represents one row in the
+	         * list.
+	         *
+	         * @see android.widget.ListAdapter#getItem(int)
+	         */
+	        public Object getItem(int position) {
+	            return position;
+	        }
+
+	        /**
+	         * Use the array index as a unique id.
+	         *
+	         * @see android.widget.ListAdapter#getItemId(int)
+	         */
+	        public long getItemId(int position) {
+	            return position;
+	        }
+
+	        /**
+	         * Make a view to hold each row.
+	         *
+	         * @see android.widget.ListAdapter#getView(int, android.view.View,
+	         *      android.view.ViewGroup)
+	         */
+	        public View getView(int position, View convertView, ViewGroup parent) {
+	            // A ViewHolder keeps references to children views to avoid unneccessary calls
+	            // to findViewById() on each row.
+	            ViewHolder holder;
+
+	            // When convertView is not null, we can reuse it directly, there is no need
+	            // to reinflate it. We only inflate a new View when the convertView supplied
+	            // by ListView is null.
+	            if (convertView == null) {
+	                convertView = mInflater.inflate(R.layout.list_view, null);
+
+	                         
+	                // Creates a ViewHolder and store references to the two children views
+	                // we want to bind data to.
+	                holder = new ViewHolder();
+	                holder.text = (TextView) convertView.findViewById(R.id.list_item);
+
+
+
+	                
+	                
+	                convertView.setTag(holder);
+	            } else {
+	                // Get the ViewHolder back to get fast access to the TextView
+	                // and the ImageView.
+	                holder = (ViewHolder) convertView.getTag();
+	            }
+
+	            // Bind the data efficiently with the holder.
+	            holder.text.setText(TAGS[position]);
+
+	            return convertView;
+	        }
+	        
+	        
+	        
+	        
+	        
+	        
+
+	        static class ViewHolder {
+	            TextView text;
+	            ImageView icon;
+	        }
+	    }
+
+	    @Override
+	    public void onCreate(Bundle savedInstanceState) {
+	        super.onCreate(savedInstanceState);
+	        setListAdapter(new EfficientAdapter(this));
+	    }
 
 		
+		
+		
+		
+		
+		
+		
+	}
+		/*
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 		  super.onCreate(savedInstanceState);
 		  
-		  setListAdapter(new ArrayAdapter<String>(this,
-		          android.R.layout.simple_list_item_1, COUNTRIES));
+		  File dir = new File("/sdcard/globetrotter/mytags");
+		  String[] TAGS = dir.list();
+		  
+		  setListAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, TAGS));
 		  getListView().setTextFilterEnabled(true);
+		  
+		  
+	    	//Intent notificationIntent = new Intent(this, ViewerActivity.class);
+	    	//notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/mosaic.jpg");
+
+		}
+	}
+		
+	public class MyAdapter extends BaseAdapter {
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int arg0, View arg1, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}		
 		
 		
 	}
-	
+	*/
