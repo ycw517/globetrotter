@@ -177,8 +177,8 @@ public class ViewerActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        mBitmap.recycle();
+        if (mBitmap != null)
+        	mBitmap.recycle();
         mImgView.setOnTouchListener(null);
         mPanState.deleteObservers();
         if (mPanCompassListener != null)

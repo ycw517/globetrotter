@@ -15,9 +15,12 @@
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus" />
 	
+	
 		
 		
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">
+	<uses-library android:name="com.google.android.maps" />
+
     
     
         <activity android:name=".GlobeTrotter"
@@ -51,6 +54,13 @@
 
 
         <activity android:name="com.ece194.globetrotter.ListView"
+        		 android:label="@string/view_tags" android:configChanges="orientation|keyboardHidden">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.ece194.globetrotter.GMapActivity"
         		 android:label="@string/view_tags" android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
