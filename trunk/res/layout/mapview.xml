@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.maps.MapView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapview"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:clickable="true"
+    android:apiKey="0W40Hnnw-0VgBmUtq5eUC9udOosb2rV9rezEuAg"
+    
+/>
+    <!-- E0:05:1D:A2:38:8A:DC:13:EA:D9:92:92:B9:69:58:09 -->
+	<!-- keytool -list -alias androiddebugkey -keystore ~/.android/debug.keystore -storepass android -keypass android -->
+	<!-- or C:\Documents and Settings\<user>\.android\debug.keystore -->
