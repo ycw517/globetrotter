@@ -27,6 +27,9 @@
 
 package com.ece194.zoom;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -34,9 +37,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
-
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * View capable of drawing an image at different zoom state levels

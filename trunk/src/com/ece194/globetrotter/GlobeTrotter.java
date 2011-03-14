@@ -20,7 +20,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -30,10 +29,13 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.ExifInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils.SimpleStringSplitter;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class GlobeTrotter extends Activity {
@@ -41,8 +43,10 @@ public class GlobeTrotter extends Activity {
 	
 	public static String timestamp;
 	
-	public static String project_name = "globetrotter-" + timestamp; 
+	public static String project_name; 
 
+	public static String longitude;
+	public static String latitude;
 		
 	public final static int CAPTURE = 100;
 	public final static int VIEWER = 200;
@@ -66,34 +70,41 @@ public class GlobeTrotter extends Activity {
 	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	    //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-	    
 	    /* Status Bar Notification Initializations */
     	mNotificationManager = (NotificationManager) getSystemService(ns);
     	int icon = R.drawable.view_normal;
     	CharSequence tickerText = "Your panorama is ready";
     	long when = System.currentTimeMillis();
     	notification = new Notification(icon, tickerText, when);
-    	Context context = getApplicationContext();
-    	CharSequence contentTitle = "GlobeTrotter";
-    	CharSequence contentText = "Your panorama is ready! Touch to view.";
-    	Intent notificationIntent = new Intent(this, ViewerActivity.class);
-    	notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/"+ project_name+".jpg");
-    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+    	
     }
 
-    
-    
-    
     
     /* Dashboard Actions */
     
    	public void capture(View v){
    		
-	    timestamp = getDateTime(); //for timestamping the project 
    		
+   		
+	    project_name = "globetrotter-" + getDateTime(); //for timestamping the project 
+	    
+
+    	Context context = getApplicationContext();
+    	CharSequence contentTitle = "GlobeTrotter";
+    	CharSequence contentText = "Your panorama is ready! Touch to view.";
+
+    	Intent notificationIntent = new Intent(this, ViewerActivity.class);
+    	notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/"+ project_name+".jpg");
+    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+    	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+	    
+	    ((TextView) findViewById(R.id.project_name)).setText(project_name);
 	    Intent intent = new Intent(this, CameraActivity.class);
 	    startActivityForResult(intent, CAPTURE);
+	    
+	    
+	    
+	    
 	}
 	
 	public void view(View v){
@@ -120,7 +131,7 @@ public class GlobeTrotter extends Activity {
 	            if (resultCode == RESULT_CANCELED){
 	            } 
 	            else {
-	            	Toast.makeText(getApplicationContext(), "VIEWER RESULT", Toast.LENGTH_LONG).show();
+	            //	Toast.makeText(getApplicationContext(), "VIEWER RESULT", Toast.LENGTH_LONG).show();
 	            }
 	        default:
 	            break;
@@ -132,7 +143,11 @@ public class GlobeTrotter extends Activity {
 	
 	LocationListener locationListener = new LocationListener() {
 	    public void onLocationChanged(Location location) {
-	     Toast.makeText(getApplicationContext(), "Location: " + Double.toString(location.getLongitude()) + ", " + Double.toString(location.getLatitude()) , Toast.LENGTH_LONG).show();
+		     Toast.makeText(getApplicationContext(), "Location: " + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()) , Toast.LENGTH_LONG).show();
+
+		     longitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
+		     latitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
+
 	    }
 
 	    public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -142,8 +157,8 @@ public class GlobeTrotter extends Activity {
 	    public void onProviderDisabled(String provider) {}
 	  };
 
-	   	private String getDateTime() {
-	        DateFormat dateFormat = new SimpleDateFormat("y-M-d-H-H-m-m-s-s");
+	   	public String getDateTime() {
+	        DateFormat dateFormat = new SimpleDateFormat("y-M-d-H-m-s");
 	        Date date = new Date();
 	        return dateFormat.format(date);
 	    }
@@ -179,6 +194,9 @@ public class GlobeTrotter extends Activity {
 
 			  if (!fail) DownloadFromUrl(); 
 				
+
+			  
+			  
 			  return null;
 		  }
 	
@@ -199,10 +217,13 @@ public class GlobeTrotter extends Activity {
 	    
 
 	    public void DownloadFromUrl() {  //this is the downloader method
+	    	
+    		String filename = "/sdcard/globetrotter/mytags/"+project_name+".jpg";
+
+	    	
             try {
-            		
                 URL url = new URL("http://dragonox.cs.ucsb.edu/Mosaic3D/uploads/" + project_name + "/mosaic.jpg" );
-                File file = new File("/sdcard/globetrotter/mytags/"+project_name+".jpg");
+                File file = new File(filename);
 
                 long startTime = System.currentTimeMillis();
                 Log.d("ImageManager", "download begining");
@@ -247,6 +268,93 @@ public class GlobeTrotter extends Activity {
             } catch (IOException e) {
                     Log.d("ImageManager", "Error: " + e);
             }
+            
+            
+            try {
+            	final String face = "STFU";
+            	
+				ExifInterface exif = new ExifInterface(filename);
+				
+				
+				
+				exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locationBuilder(latitude));
+				exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locationBuilder(longitude));
+			//	Log.v("LAT:::::", Location.convert(latitude, Location.FORMAT_SECONDS));
+//				Log.v("LONG::::", Location.convert(longitude, Location.FORMAT_SECONDS));
+
+				exif.saveAttributes();
+			//	Log.e("LATITUDE", );
+				//Log.e("LONGITUDE", "STFU");
+
+
+			} catch (IOException e) {
+				e.printStackTrace();
+				
+				Log.e("ERRRRRRROOOOOOORRRRRR", "EEEEEERRRRRROOOOOOOOR: "+ e);
+
+			}
+			
+			
+
+            
+
 	    } 
+	    
+		private String locationBuilder(String frac) {
+			
+
+			String[] location = frac.split(":",3);
+			Log.v("LOCATION DEGREES = ", location[0]);
+			Log.v("LOCATION MINUTES = ", location[1]);
+			Log.v("LOCATION SECONDS = ", location[2]);
+
+			
+			
+			location[2] = Integer.toString((int)(Double.parseDouble(location[2])));
+
+		/*	int degree;
+			int minute;
+			int second;
+			
+			float temp;
+			
+			SimpleStringSplitter sss = new SimpleStringSplitter('.');
+			
+			// start with 43.123456
+			sss.setString(frac);
+						
+			// degree = 43
+			degree = Integer.parseInt(sss.next());
+			
+			Log.v("DEGREE IS...", degree + "");
+			
+			// minute = 7.40736
+			temp = Float.parseFloat("."+sss.next())*60;
+						
+			// minute = 7
+			sss.setString(Float.toString(temp));
+			minute = Integer.parseInt(sss.next());
+						
+			Log.v("MINUTE IS...", minute + "");
+
+			
+			// second = 24.4416 
+			temp = Float.parseFloat("."+sss.next())*60;
+			
+			// second = 24
+			sss.setString(Float.toString(temp));
+			second = Integer.parseInt(sss.next());
+
+			Log.v("SECOND IS...", second + "");
+
+			
+			return String.format("%d/1,%d/1,%d/1", degree, minute, second);
+			*/
+			
+			return String.format("%s/1,%s/1,%s/1", location[0], location[1], location[2]);
+
+		}
+
+	    
 	}  
 }

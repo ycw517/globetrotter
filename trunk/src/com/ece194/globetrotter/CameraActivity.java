@@ -5,10 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -41,7 +38,6 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
-import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,14 +49,13 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
 
 	public String project_name = GlobeTrotter.project_name;
 
 	public static String loop = "0";
-	public static String email ="william.r.moy@gmail.com";
+	public static String email ="brian.dunlay@gmail.com";
 	
 	
 	
