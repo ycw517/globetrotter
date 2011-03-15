@@ -11,21 +11,22 @@ import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-	public class ListView extends ListActivity {
+public class ListView extends ListActivity {
 		
 		
-		   static File dir = new File("/sdcard/globetrotter/mytags");
-	   static String[] TAGS = dir.list();
+	static File dir = new File("/sdcard/globetrotter/mytags");
+	static String[] TAGS = dir.list();
 	
 	
     private static class EfficientAdapter extends BaseAdapter {
@@ -34,6 +35,7 @@ import android.widget.TextView;
         public EfficientAdapter(Context context) {
             // Cache the LayoutInflate to avoid asking for a new one each time.
             mInflater = LayoutInflater.from(context);
+            
         }
 
         /**
@@ -74,6 +76,9 @@ import android.widget.TextView;
          *      android.view.ViewGroup)
          */
         public View getView(final int position, View convertView, ViewGroup parent) {
+        	
+
+        	
             // A ViewHolder keeps references to children views to avoid unneccessary calls
             // to findViewById() on each row.
             final ViewHolder holder;
@@ -95,12 +100,15 @@ import android.widget.TextView;
                 holder = (ViewHolder) convertView.getTag();
             }
 
+
+            
             // Bind the data efficiently with the holder.
             
             
             convertView.setFocusable(true);
-            convertView.setFocusableInTouchMode(convertView.isInTouchMode ());
+        //    convertView.setFocusableInTouchMode(convertView.isInTouchMode ());
             convertView.setClickable(true);
+            
             
             convertView.setOnClickListener(
  	          new OnClickListener() {
@@ -113,36 +121,14 @@ import android.widget.TextView;
         		 }
         		 
         		});
-         //   StringBuilder builder = new StringBuilder();
 
             try {
 				ExifInterface exif = new ExifInterface("/sdcard/globetrotter/mytags/"+ TAGS[position]);
-			//	if (exif.getAttribute("Filename") != null)
-				//	Log.v("FILENAMEEEEEEE", exif.getAttribute("Filename"));
-		//		else
-			//		Log.v("FILENAMEEEEEEE", "NULL");
 
-			//	Log.e("LATITUDE EXTRACTED", exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
-			//	Log.e("LONGITUDE EXTRACTED", exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
-			//	Log.e("FILENAME EXTRACTED", exif.getAttribute("Filename"));
-
-                
-           //     builder.append("Date & Time: " + getExifTag(exif,ExifInterface.TAG_GPS_LATITUDE) + "\n\n");
-            //    builder.append("Date & Time: " + getExifTag(exif,ExifInterface.TAG_GPS_LONGITUDE) + "\n\n");
-
-
-             //   Log.v("MODEL IS...", exif.getAttribute(ExifInterface.TAG_MODEL));
-	          //   holder.text.setText(exif.getAttribute(ExifInterface.TAG_MODEL));
-	             holder.text.setText(exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
-
-				
-			//	holder.text.setText(exif.getAttribute("Filename"));
+				holder.text.setText(TAGS[position]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-            
-	//		Log.e("LATITUDE EXTRACTED", builder.toString());
-
 
             return convertView;
         }
@@ -202,16 +188,29 @@ import android.widget.TextView;
 	
 	
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v,
-                                    ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
       super.onCreateContextMenu(menu, v, menuInfo);
-      MenuInflater inflater = getMenuInflater();
-      inflater.inflate(R.menu.tag_context_menu, menu);
-    }
+
+      
+      menu.add("Make Toast")
+      .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+       @Override public boolean onMenuItemClick(MenuItem item) {
+        String toastText = "HERRO";
+        Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
+        return true;
+       }
+      });
+    } 
+
+    //  MenuInflater inflater = getMenuInflater();
+     // inflater.inflate(R.menu.tag_context_menu, menu);
+      
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
       AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+      
+
       switch (item.getItemId()) {
       case R.id.tagView:
       //  editNote(info.id);

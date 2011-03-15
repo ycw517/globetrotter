@@ -82,19 +82,20 @@ public class GMapActivity extends MapActivity {
 	
 	private int RotToInt(String rot) {
 	
-		String[] location = rot.split(",",3);
+		Log.v("globetrotter", rot);		
+		String[] location = rot.split(",", 3);
 		String[] degrees = location[0].split("/", 2);
 		String[] minutes = location[1].split("/", 2);
 		String[] seconds = location[2].split("/", 2);
 		
 		double d = Double.parseDouble(degrees[0]);
-		double m = Double.parseDouble(minutes[1])/60;
-		double s = Double.parseDouble(seconds[0])/(3600);
+		double m = Double.parseDouble(minutes[0])/60;
+		double s = Double.parseDouble(seconds[0])/(3600*100000);
 
 		if (d < 0) {
-			d = d*-1;
+			d = 0-d;
 			d = d + m + s;
-			d = d*-1;
+			d = 0-d;
 		} else {
 			d = d + m + s;
 		}
