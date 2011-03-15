@@ -53,6 +53,8 @@ public class GlobeTrotter extends Activity {
 	public final static int CAPTURE = 100;
 	public final static int VIEWER = 200;
 	public final static int LIST = 300;
+	public final static int GMAP = 400;
+
 	
 	LocationManager locationManager;
 	
@@ -93,44 +95,18 @@ public class GlobeTrotter extends Activity {
     	context = getApplicationContext();
 
     	
-    /*	settings = getSharedPreferences(PREFS_NAME, 0);
+   // 	settings = getSharedPreferences(PREFS_NAME, 0);
     	
-    	if (!settings.contains("email") || !settings.contains("noemail")) {
-        	editor = settings.edit();
+        //	editor = settings.edit();
 
 
-    		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-    		final EditText input = new EditText(this);
-    		alert.setView(input);
-    		alert.setTitle("What's your email?");
-    		alert.setMessage("Enter your email here to receive a notification in your inbox with a link to your panoramas!");
-    		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-    			public void onClick(DialogInterface dialog, int whichButton) {
-    				String value = input.getText().toString().trim();
-    				Toast.makeText(getApplicationContext(), "\"" + value + "\" saved!" ,
-    						Toast.LENGTH_SHORT).show();
-    				
-    				editor.putString("email", value);
+ 
+       // 	editor.putString("latestPanorama", value);
 
-    			}
-    		});
+    	
+    
+        //	editor.commit();
 
-    		alert.setNegativeButton("No Thanks",
-    				new DialogInterface.OnClickListener() {
-    					public void onClick(DialogInterface dialog, int whichButton) {
-    						dialog.cancel();
-    	    				editor.putString("noemail", "dontemail");
-
-    					}
-    				});
-    		
-    		
-    		alert.show();
-        	
-        	
-        	editor.commit();
-        	}
-*/
     		
     	}
     	
@@ -152,7 +128,7 @@ public class GlobeTrotter extends Activity {
 	
     /* Dashboard Actions */
     
-   	public void capture(View v){
+   	public void captureTag(View v){
    		
 	    project_name = "globetrotter-" + getDateTime(); //for timestamping the project 
 
@@ -161,16 +137,28 @@ public class GlobeTrotter extends Activity {
     	contentIntentSuccess = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     	contentIntentFailure = PendingIntent.getActivity(this, 0, new Intent(this, GlobeTrotter.class), 0);
 	        	
-	    ((TextView) findViewById(R.id.project_name)).setText(project_name);
+	//    ((TextView) findViewById(R.id.project_name)).setText(project_name);
 	    Intent intent = new Intent(this, CameraActivity.class);
 	    startActivityForResult(intent, CAPTURE);
 	}
 	
-	public void view(View v){
+	public void listTags(View v){
 	    Intent intent = new Intent(this, TagSelectorActivity.class);
 	    startActivityForResult(intent, LIST);
 	}
 
+	public void mapTags(View v){
+	    Intent intent = new Intent(this, GMapActivity.class);
+	    startActivityForResult(intent, GMAP);
+	}
+
+	
+	
+	
+	
+	
+	
+	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		
 	    switch (requestCode) {
@@ -359,7 +347,7 @@ public class GlobeTrotter extends Activity {
 			Log.v("Globetrotter", "Minutes: " + location[1]);
 			Log.v("Globetrotter", "Seconds: " + location[2]);
 
-			location[2] = Integer.toString((int)(Double.parseDouble(location[2])*100000));
+			location[2] = Integer.toString((int)(Double.parseDouble(location[2])*1000));
 
 			return String.format("%s/1,%s/1,%s/1000", location[0], location[1], location[2]);
 

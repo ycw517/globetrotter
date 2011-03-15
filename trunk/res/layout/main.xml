@@ -3,13 +3,62 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:gravity="center_vertical|center_horizontal"
-    >
+    android:gravity="center_horizontal|top">
+    
+   	<ImageView 
+   		android:id="@+id/title_graphic" 
+   		android:layout_width="match_parent" 
+   		android:layout_height="wrap_content" 
+   		android:src="@drawable/title">
+	</ImageView>
 
 	
-	<TextView android:id="@+id/project_name" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-	
-	<Button android:id="@+id/tag_button" android:background="@drawable/tag_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="capture" android:layout_height="wrap_content" android:text="@string/tag" ></Button>
-	<Button android:id="@+id/view_button" android:background="@drawable/view_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="view" android:layout_height="wrap_content" android:text="@string/view" ></Button>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:orientation="vertical"
+	    android:layout_width="250sp"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_vertical|center_horizontal"
+	    android:paddingTop="25sp">
 
+		
+		<Button 
+			android:id="@+id/tag_button" 
+			android:layout_width="fill_parent" 
+			android:onClick="captureTag" 
+			android:layout_height="wrap_content" 
+			android:text="@string/tag" 
+			android:textSize="25sp">
+		</Button>
+			
+		<Button 
+			android:id="@+id/view_button" 
+			android:layout_width="fill_parent" 
+			android:onClick="listTags" 
+			android:layout_height="wrap_content" 
+			android:text="List Tags" 
+			android:textSize="25sp"
+			>
+		</Button>
+			
+		<Button 
+			android:id="@+id/mapTags" 
+			android:onClick="mapTags" 	
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:text="Map Tags"
+			android:textSize="25sp">
+		</Button>
+		
+		<Button 
+			android:id="@+id/randomTag" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:text="Trot Somewhere"
+			android:textSize="25sp"
+			 >
+		</Button>
+	
+
+			
+	</LinearLayout>
 </LinearLayout>
