@@ -74,7 +74,6 @@ public class GlobeTrotter extends Activity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	    //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-
 	    
 	    /* Status Bar Notification Initializations */
     	mNotificationManager = (NotificationManager) getSystemService(ns);
@@ -106,13 +105,11 @@ public class GlobeTrotter extends Activity {
    	public void capture(View v){
    		
 	    project_name = "globetrotter-" + getDateTime(); //for timestamping the project 
-	    
 
     	notificationIntent = new Intent(this, ViewerActivity.class);
     	notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/"+ project_name+".jpg");
     	contentIntentSuccess = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     	contentIntentFailure = PendingIntent.getActivity(this, 0, new Intent(this, GlobeTrotter.class), 0);
-
 	        	
 	    ((TextView) findViewById(R.id.project_name)).setText(project_name);
 	    Intent intent = new Intent(this, CameraActivity.class);

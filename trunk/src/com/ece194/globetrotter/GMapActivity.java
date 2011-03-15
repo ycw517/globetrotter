@@ -7,11 +7,11 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.media.ExifInterface;
 import android.os.Bundle;
-import android.text.TextUtils.SimpleStringSplitter;
 import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
@@ -58,8 +58,6 @@ public class GMapActivity extends MapActivity {
 	private void coordBuilder() {
 		ExifInterface exif = null;
 
-
-		
 		for(int i = 0; i < TAGS.length; i++) {
 			
 			try {
@@ -68,10 +66,8 @@ public class GMapActivity extends MapActivity {
 				longitude = RotToInt(exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
 				latitude = RotToInt(exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
 
-				
 				Log.v("LAT IS FAT: ", latitude+ "");
 				Log.v("LONG IS LONG:", longitude + "");
-				
 				
 				coords[0][i] = latitude;
 				coords[1][i] = longitude;
@@ -103,7 +99,7 @@ public class GMapActivity extends MapActivity {
 			d = d + m + s;
 		}
 		
-		Log.v("TEH LOCATIONS:", d + "");
+		Log.v("Globetrotter:", "Location: " + d);
 		
 		return (int) (d*1000000);
 	}
@@ -114,7 +110,8 @@ public class GMapActivity extends MapActivity {
 
 		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 		private Context mContext;
-		
+		private int currentIndex;
+
 		public ItemizedTagOverlay(Drawable defaultMarker) {
 			  super(boundCenterBottom(defaultMarker));
 			// TODO Auto-generated constructor stub
@@ -141,6 +138,9 @@ public class GMapActivity extends MapActivity {
 		  AlertDialog.Builder dialog = new AlertDialog.Builder(GMapActivity.this);
 		  dialog.setTitle(item.getTitle());
 		  dialog.setMessage(item.getSnippet());
+		  dialog.setPositiveButton("View Tag", yourListener);
+		  dialog.setNegativeButton("Close", null);
+		  currentIndex = index;
 		  dialog.show();
 		  return true;
 		}
@@ -150,10 +150,23 @@ public class GMapActivity extends MapActivity {
 		    mOverlays.add(overlay);
 		    populate();
 		}
-		
-	}
 
-	
+		
+		DialogInterface.OnClickListener yourListener = new DialogInterface.OnClickListener(){
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if (which == DialogInterface.BUTTON_POSITIVE){
+			    	Intent intent = new Intent();
+			    	intent.setClassName("com.ece194.globetrotter", "com.ece194.globetrotter.ViewerActivity");
+			    	intent.putExtra("filename","/sdcard/globetrotter/mytags/"+ TAGS[currentIndex]);
+ 					startActivity(intent);    
+				} 
+			}
+	    };
+
+		
+	}	
 }
 
 
