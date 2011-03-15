@@ -21,11 +21,14 @@ import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,6 +37,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +68,9 @@ public class GlobeTrotter extends Activity {
 
 	private Context context;
 
+	private String PREFS_NAME = "globetrotter_settings";
+	SharedPreferences settings;
+	SharedPreferences.Editor editor;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,8 +79,8 @@ public class GlobeTrotter extends Activity {
         
     	// Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-	    //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+	    //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 	    
 	    /* Status Bar Notification Initializations */
     	mNotificationManager = (NotificationManager) getSystemService(ns);
@@ -85,7 +92,50 @@ public class GlobeTrotter extends Activity {
     	notification = new Notification(notificationIcon, ticker, when);
     	context = getApplicationContext();
 
-    }
+    	
+    /*	settings = getSharedPreferences(PREFS_NAME, 0);
+    	
+    	if (!settings.contains("email") || !settings.contains("noemail")) {
+        	editor = settings.edit();
+
+
+    		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+    		final EditText input = new EditText(this);
+    		alert.setView(input);
+    		alert.setTitle("What's your email?");
+    		alert.setMessage("Enter your email here to receive a notification in your inbox with a link to your panoramas!");
+    		alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog, int whichButton) {
+    				String value = input.getText().toString().trim();
+    				Toast.makeText(getApplicationContext(), "\"" + value + "\" saved!" ,
+    						Toast.LENGTH_SHORT).show();
+    				
+    				editor.putString("email", value);
+
+    			}
+    		});
+
+    		alert.setNegativeButton("No Thanks",
+    				new DialogInterface.OnClickListener() {
+    					public void onClick(DialogInterface dialog, int whichButton) {
+    						dialog.cancel();
+    	    				editor.putString("noemail", "dontemail");
+
+    					}
+    				});
+    		
+    		
+    		alert.show();
+        	
+        	
+        	editor.commit();
+        	}
+*/
+    		
+    	}
+    	
+    	
+
 
 	@Override
     public void onPause() {
@@ -119,11 +169,6 @@ public class GlobeTrotter extends Activity {
 	public void view(View v){
 	    Intent intent = new Intent(this, TagSelectorActivity.class);
 	    startActivityForResult(intent, LIST);
-	}
-	
-	public void debugViewer(View v){
-	    Intent intent = new Intent(this, ViewerActivity.class);
-	    startActivityForResult(intent, VIEWER);
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -314,9 +359,9 @@ public class GlobeTrotter extends Activity {
 			Log.v("Globetrotter", "Minutes: " + location[1]);
 			Log.v("Globetrotter", "Seconds: " + location[2]);
 
-			location[2] = Integer.toString((int)(Double.parseDouble(location[2])));
+			location[2] = Integer.toString((int)(Double.parseDouble(location[2])*100000));
 
-			return String.format("%s/1,%s/1,%s/1", location[0], location[1], location[2]);
+			return String.format("%s/1,%s/1,%s/1000", location[0], location[1], location[2]);
 
 		}
 	}  

@@ -89,6 +89,8 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		
+		 
 		setContentView(R.layout.capture);
 	    preview=(SurfaceView)findViewById(R.id.preview);
 	    previewHolder=preview.getHolder();

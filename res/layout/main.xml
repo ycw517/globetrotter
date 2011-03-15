@@ -6,21 +6,10 @@
     android:gravity="center_vertical|center_horizontal"
     >
 
-
-<TextView android:id="@+id/project_name" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
-
-
-     
-   
-     
-
-<Button android:id="@+id/tag_button" android:background="@drawable/tag_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="capture" android:layout_height="wrap_content" android:text="@string/tag" ></Button>
-<Button android:id="@+id/view_button" android:background="@drawable/view_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="view" android:layout_height="wrap_content" android:text="@string/view" ></Button>
-
-
-
-<Button android:id="@+id/debugViewer" android:layout_width="wrap_content" android:onClick="debugViewer" android:layout_height="wrap_content" android:layout_margin="10dp" android:text="Image Viewer"></Button>
-
-
+	
+	<TextView android:id="@+id/project_name" android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	
+	<Button android:id="@+id/tag_button" android:background="@drawable/tag_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="capture" android:layout_height="wrap_content" android:text="@string/tag" ></Button>
+	<Button android:id="@+id/view_button" android:background="@drawable/view_button" android:layout_width="wrap_content" android:gravity="bottom|center_horizontal" android:textColor="#FFFFFF" android:onClick="view" android:layout_height="wrap_content" android:text="@string/view" ></Button>
 
 </LinearLayout>
