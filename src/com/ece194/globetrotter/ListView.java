@@ -180,8 +180,11 @@ public class ListView extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setListAdapter(new EfficientAdapter(this));
+        
         registerForContextMenu(getListView());
+
     }
 
 	
