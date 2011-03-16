@@ -25,8 +25,8 @@ public class PanCompassListener implements SensorEventListener {
     private int mScreenOrientation;
 
     /** Consts for mScreenOrientation */
-    private static final int ORIENTATION_LANDSCAPE = 2;
-    private static final int ORIENTATION_PORTRAIT = 1;
+    public static final int ORIENTATION_LANDSCAPE = 2;
+    public static final int ORIENTATION_PORTRAIT = 1;
     
     /** Data holders */
     private float[] mGData = new float[3];
