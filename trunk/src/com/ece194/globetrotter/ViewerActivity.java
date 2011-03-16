@@ -76,8 +76,8 @@ public class ViewerActivity extends Activity {
             		Configuration currConfig = getResources().getConfiguration();
             		mPanCompassListener.setOrientation(currConfig.orientation);
     			}
-    			else // otherwise, just resume the old one
-    				mPanCompassListener.resume();
+    			// always resume() to start listening
+    			mPanCompassListener.resume();
     			// set the current pan state
     			mPanCompassListener.setPanState(mPanState);
     			// change button text

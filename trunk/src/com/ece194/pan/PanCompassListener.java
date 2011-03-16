@@ -38,7 +38,7 @@ public class PanCompassListener implements SensorEventListener {
     
     public PanCompassListener(Context cntxt) {
         mSensorManager = (SensorManager)cntxt.getSystemService(Context.SENSOR_SERVICE);
-        resume();
+        //resume();
     }
     
     public void resume() {
