@@ -1,4 +1,3 @@
-// this should be revision 21
 package com.ece194.globetrotter;
 
 import java.io.BufferedOutputStream;
@@ -7,6 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.ece194.pan.PanCompassListener;
+import com.ece194.pan.PanState;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,47 +54,52 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
 
-public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback {
+public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback, Observer {
 
 	public String project_name = GlobeTrotter.project_name;
 
+	// Assorted text
 	public static String loop = "0";
 	public static String email ="brian.dunlay@gmail.com";
 	
-	
-	
-	
-	
-	
-	
+	// Surface vars
 	private SurfaceView preview;
 	private SurfaceHolder previewHolder;
 	
+	// Camera vars
 	private Camera mCamera;
 	private boolean mPreviewRunning = false;
 	private boolean mCaptureFrame = false;
 	private int frame_number = 0;
 	private byte[] frame = new byte[1];
 	
-	private byte[] progressBuffer = new byte[4];
-	
+	// Handle to preview text
 	private TextView mPreviewText;
 	
 	private AlertDialog.Builder builder;
 	
-	ProgressDialog  pDialogue;
-	
+	// Notification vars
 	String ns = Context.NOTIFICATION_SERVICE;
 	NotificationManager mNotificationManager;
 	private static final int HELLO_ID = 1;
 	Notification notification;
+
+	// Progress vars
+	private byte[] progressBuffer = new byte[4];
+	ProgressDialog  pDialogue;
+	
+	// Compass listener
+	private PanCompassListener mCompassListener;
+	private PanState mPanState;
+	private float mInitialHeading;
+	private boolean isRecording = false;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		
-		 
 		setContentView(R.layout.capture);
 	    preview=(SurfaceView)findViewById(R.id.preview);
 	    previewHolder=preview.getHolder();
@@ -133,11 +142,16 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
     	       });
 		builder.create();
 		
+		// Init compass listeners
+		mCompassListener = new PanCompassListener(getApplicationContext());
+		mPanState = new PanState();
 	   	}
 
 	@Override
 	public void onResume() {
-		super.onResume();		
+		super.onResume();
+		if (isRecording)
+			mCompassListener.resume();
 	}
 
 	@Override
@@ -147,6 +161,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 			mPreviewRunning = false;
+			mCompassListener.stop();
 		}
 		mCamera.setPreviewCallback(null); // this is necessary to prevent the callback from trying to access an empty surfaceview
 		 mCamera.release();		
@@ -161,12 +176,12 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	}
 
 	public void startRecording() {
+		isRecording = true;
 		mCaptureFrame = true;
 	}
 	
 	public void captureFrame(View v) {
 		mCaptureFrame = true;
-
 	}
 
 	
@@ -211,32 +226,32 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.startRecording:
+	    	isRecording = true;
 	        startRecording();
+	        mCompassListener.resume();
 	        return true;
 	    case R.id.stopRecording:
+	    	isRecording = false;
 	        stopRecording();
+	        mCompassListener.stop();
 	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
 	
-
-	@Override
+	// implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
 	}
 
-
-	@Override
+	// implements SurfaceHolder.Callback
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		mPreviewRunning = false;
 
 	}
 	
-
-
-	@Override
+	// implements Camera.AutoFocusCallback
 	public void onAutoFocus(boolean success, Camera camera) {
 		// TODO Auto-generated method stub
 		
@@ -265,8 +280,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		}
 	};
 	
-	
-	@Override
+	// implements SurfaceHolder.Callback
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 	
 		if (mPreviewRunning) {
@@ -355,23 +369,17 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
         }
 
         protected void onPreExecute() {
+        	// nothing
         }
         
         
         protected void onProgressUpdate(Integer... progress) {     
             Log.i("UPDATE","UPDATE = " + progress[0]);
-            
             pDialogue.dismiss();
-            
              switch (progress[0]) {
-             
                 case -1:  break;			
                 default: break;
-  
             }
-             
-
-             
         }
 
         protected void onPostExecute(Void blah) {
@@ -388,6 +396,19 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 
         	//finish(); // this could also start an intent to another activity, like a list, and then finish here
         }
+    }
+    
+    // implements Observer
+    // captures a frame when the compass listener says it is appropriate
+    public void update(Observable observable, Object data) {
+    	// TODO: determine conditions for capture
+    	float heading = mPanState.getPanX();
+    	if (frame_number == 0) {
+    		mInitialHeading = heading;
+    		mCaptureFrame = true;
+    	}
+    	if (heading-mInitialHeading >= 20.f/360.f)
+        	mCaptureFrame = true;
     }
 
     public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {

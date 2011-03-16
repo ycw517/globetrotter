@@ -155,7 +155,6 @@ public class GMapActivity extends MapActivity {
 		
 		DialogInterface.OnClickListener yourListener = new DialogInterface.OnClickListener(){
 			
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if (which == DialogInterface.BUTTON_POSITIVE){
 			    	Intent intent = new Intent();

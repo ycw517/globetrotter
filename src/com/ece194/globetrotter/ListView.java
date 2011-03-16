@@ -112,8 +112,7 @@ public class ListView extends ListActivity {
             
             convertView.setOnClickListener(
  	          new OnClickListener() {
-            			
-        		 @Override
+            	
         		 public void onClick(View view) {
             		  Intent myIntent = new Intent(view.getContext(), ViewerActivity.class);
             		  myIntent.putExtra("filename", "/sdcard/globetrotter/mytags/"+ TAGS[position]);
@@ -197,7 +196,7 @@ public class ListView extends ListActivity {
       
       menu.add("Make Toast")
       .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-       @Override public boolean onMenuItemClick(MenuItem item) {
+    	public boolean onMenuItemClick(MenuItem item) {
         String toastText = "HERRO";
         Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
         return true;
