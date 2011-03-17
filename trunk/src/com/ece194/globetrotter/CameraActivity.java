@@ -339,19 +339,18 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		new DownloadFilesTask().execute();
     }
     
+    public void toggle360(View v) {
+    	if (loop.contentEquals("0"))
+    		loop = "1";
+    	else
+    		loop = "0";
+    }
+    
     private class DownloadFilesTask extends AsyncTask<Void, Integer, Void> {
     	 boolean fail = false;
 
         protected Void doInBackground(Void... urls) {
         	int response = 0;
-
-           /* try {
-                Thread.currentThread().sleep(2000);
-                }
-              catch (InterruptedException e) {
-                e.printStackTrace();
-                }
-        	*/
         	
         	try {
                 HttpClient client = new DefaultHttpClient();  
@@ -372,7 +371,6 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
         }
 
         protected void onPreExecute() {
-        	// nothing
         }
         
         
@@ -388,16 +386,10 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
         protected void onPostExecute(Void blah) {
             Log.i("COMPLETE","COMPLETE");
         	if (fail) {
-//        		builder.show();
         	}
         	
         	 setResult(RESULT_OK);
               finish();
-
-        	
-       // 	mNotificationManager.notify(HELLO_ID, notification);
-
-        	//finish(); // this could also start an intent to another activity, like a list, and then finish here
         }
     }
     
