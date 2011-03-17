@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -65,6 +66,28 @@ public class GMapActivity extends MapActivity {
 		super.onResume();
 	}
 	
+	private void updateOverlays() {
+	    TAGS = dir.list();
+	    MapView mapView = (MapView) findViewById(R.id.mapview);
+	    if (mapOverlays != null && !mapOverlays.isEmpty()) {
+	    	mapOverlays.clear();
+	    	mapView.invalidate();
+	    }
+	    
+	    mapOverlays = mapView.getOverlays();
+	    Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+	    ItemizedTagOverlay itemizedoverlay = new ItemizedTagOverlay(drawable);
+
+	    coordBuilder();
+	    
+	    for (int i = 0; i < TAGS.length; i++) {
+		    itemizedoverlay.addOverlay(new OverlayItem(new GeoPoint(coords[1][i], coords[0][i]), TAGS[i],  coords[1][i]/1000000.f + ", " + coords[0][i]/1000000.f));
+	    }
+	    mapOverlays.add(itemizedoverlay);
+	    
+	    //mapView.invalidate();
+	}
+	
 	
 	private void coordBuilder() {
 		ExifInterface exif = null;
@@ -115,24 +138,6 @@ public class GMapActivity extends MapActivity {
 		
 		return (int) (d*1000000);
 	}
-	
-	private void updateOverlays() {
-	    MapView mapView = (MapView) findViewById(R.id.mapview);
-	    if (mapOverlays != null && !mapOverlays.isEmpty()) mapOverlays.clear();
-	    mapOverlays = mapView.getOverlays();
-	    Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-	    ItemizedTagOverlay itemizedoverlay = new ItemizedTagOverlay(drawable);
-
-	    TAGS = dir.list();
-	    coordBuilder();
-	    
-	    for (int i = 0; i < TAGS.length; i++) {
-		    itemizedoverlay.addOverlay(new OverlayItem(new GeoPoint(coords[1][i], coords[0][i]), TAGS[i],  coords[1][i]/1000000.f + ", " + coords[0][i]/1000000.f));
-	    }
-	    mapOverlays.add(itemizedoverlay);
-	    
-	    //mapView.invalidate();
-	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -154,11 +159,12 @@ public class GMapActivity extends MapActivity {
 			  return true;
 		  case R.id.contextRename:
 			  renameTag();
-			  updateOverlays();
+			  return true;
+		  case R.id.contextShare:
+			  share();
 			  return true;
 		  case R.id.contextDelete:
 			  deleteTag();
-			  updateOverlays();
 			  return true;
 		  default:
 		    return super.onContextItemSelected(item);
@@ -188,6 +194,7 @@ public class GMapActivity extends MapActivity {
     		if (orig.renameTo(file_new)) {
     			Toast toast = Toast.makeText(getApplicationContext(), "Successfully renamed to " + filename_new, Toast.LENGTH_SHORT);
     			toast.show();
+    			updateOverlays();
     		}
     		else {
     			Toast toast = Toast.makeText(getApplicationContext(), "Error renaming", Toast.LENGTH_SHORT);
@@ -219,6 +226,7 @@ public class GMapActivity extends MapActivity {
     		if (orig.delete()) {
     			Toast toast = Toast.makeText(getApplicationContext(), "Successfully deleted " + filename, Toast.LENGTH_SHORT);
     			toast.show();
+    			updateOverlays();
     		}
     		else {
     			Toast toast = Toast.makeText(getApplicationContext(), "Error deleting", Toast.LENGTH_SHORT);
@@ -236,21 +244,26 @@ public class GMapActivity extends MapActivity {
     	alert.show();
     }
 	
+	private void share() {
+	    Intent share = new Intent(Intent.ACTION_SEND);
+	    share.setType("image/png");
+	    share.putExtra(Intent.EXTRA_STREAM,
+	    Uri.parse("file://" + filename));
+	    startActivity(Intent.createChooser(share, "Share Tag"));
+	}
+	
 	
 	public class ItemizedTagOverlay extends ItemizedOverlay<OverlayItem> {
 
 		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
-		private Context mContext;
 
 		public ItemizedTagOverlay(Drawable defaultMarker) {
 			  super(boundCenterBottom(defaultMarker));
-			// TODO Auto-generated constructor stub
 		}
 		
 		public ItemizedTagOverlay(Drawable defaultMarker, Context context) {
 			  super(defaultMarker);
-			  mContext = context;
-			}
+		}
 
 		@Override
 		protected OverlayItem createItem(int i) {
@@ -264,17 +277,8 @@ public class GMapActivity extends MapActivity {
 		
 		@Override
 		protected boolean onTap(int index) {
-		  OverlayItem item = mOverlays.get(index);
 		  currentIndex = index;
 		  openContextMenu(findViewById(R.id.mapview));
-		  /*
-		  AlertDialog.Builder dialog = new AlertDialog.Builder(GMapActivity.this);
-		  dialog.setTitle(item.getTitle());
-		  dialog.setMessage(item.getSnippet());
-		  dialog.setPositiveButton("View Tag", buttonListener);
-		  dialog.setNeutralButton("Edit Tag", buttonListener);
-		  dialog.setNegativeButton("Close", null);
-		  dialog.show();*/
 		  return true;
 		}
 
@@ -283,22 +287,6 @@ public class GMapActivity extends MapActivity {
 		    mOverlays.add(overlay);
 		    populate();
 		}
-
-		
-		DialogInterface.OnClickListener buttonListener = new DialogInterface.OnClickListener(){
-			
-			public void onClick(DialogInterface dialog, int which) {
-				if (which == DialogInterface.BUTTON_POSITIVE){
-			    	Intent intent = new Intent();
-			    	intent.setClassName("com.ece194.globetrotter", "com.ece194.globetrotter.ViewerActivity");
-			    	intent.putExtra("filename","/sdcard/globetrotter/mytags/"+ TAGS[currentIndex]);
- 					startActivity(intent);    
-				} 
-				else if (which == DialogInterface.BUTTON_NEUTRAL) {
-					
-				}
-			}
-	    };
 		
 	}	
 }
