@@ -132,7 +132,7 @@ public class GlobeTrotter extends Activity {
    		
 	    project_name = "globetrotter-" + getDateTime(); //for timestamping the project 
 
-    	notificationIntent = new Intent(this, ViewerActivity.class);
+    	notificationIntent = new Intent(getApplicationContext(), ViewerActivity.class);
     	notificationIntent.putExtra("filename","/sdcard/globetrotter/mytags/"+ project_name+".jpg");
     	contentIntentSuccess = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     	contentIntentFailure = PendingIntent.getActivity(this, 0, new Intent(this, GlobeTrotter.class), 0);
