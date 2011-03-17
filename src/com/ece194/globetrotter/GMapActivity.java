@@ -9,13 +9,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ImageView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -51,7 +48,7 @@ public class GMapActivity extends MapActivity {
 	    coordBuilder();
 	    
 	    for (int i = 0; i < TAGS.length; i++) {
-		    itemizedoverlay.addOverlay(new OverlayItem(new GeoPoint(coords[1][i], coords[0][i]), TAGS[i],  coords[1][i]/1000000.f + ", " + coords[0][i]/1000000.f));
+		    itemizedoverlay.addOverlay(new OverlayItem(new GeoPoint(coords[1][i], coords[0][i]), "Sweet!", "It works!!" + latitude + " " + longitude));
 	    }
 	    
 	    mapOverlays.add(itemizedoverlay);
@@ -93,7 +90,7 @@ public class GMapActivity extends MapActivity {
 		
 		double d = Double.parseDouble(degrees[0]);
 		double m = Double.parseDouble(minutes[0])/60;
-		double s = Double.parseDouble(seconds[0])/(3600*10000);
+		double s = Double.parseDouble(seconds[0])/(3600*100000);
 
 		if (d < 0) {
 			d = 0-d;
@@ -138,19 +135,10 @@ public class GMapActivity extends MapActivity {
 		
 		@Override
 		protected boolean onTap(int index) {
-			
-			
-		 // ImageView x =  (ImageView) findViewById(R.id.gmap_preview);
-	     // Bitmap bm = BitmapFactory.decodeFile("/sdcard/globetrotter/mytags/" + TAGS[currentIndex]);
-
-		 // x.setImageBitmap(bm);
-		  
-		  
 		  OverlayItem item = mOverlays.get(index);
 		  AlertDialog.Builder dialog = new AlertDialog.Builder(GMapActivity.this);
 		  dialog.setTitle(item.getTitle());
 		  dialog.setMessage(item.getSnippet());
-		//  dialog.setView( x  );
 		  dialog.setPositiveButton("View Tag", yourListener);
 		  dialog.setNegativeButton("Close", null);
 		  currentIndex = index;
