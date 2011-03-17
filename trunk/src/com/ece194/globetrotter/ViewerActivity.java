@@ -49,6 +49,8 @@ public class ViewerActivity extends Activity {
     private PanTouchListener mPanTouchListener;
     private PanCompassListener mPanCompassListener;
     
+    Random rand;
+    
     /** Determine which sensor to use */
     private int mListener = TOUCH_LISTENER;
 
@@ -106,6 +108,8 @@ public class ViewerActivity extends Activity {
     	String ns = Context.NOTIFICATION_SERVICE;
     	NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
     	mNotificationManager.cancelAll();
+    	
+    	rand = new Random();
 
         
         
@@ -270,11 +274,12 @@ public class ViewerActivity extends Activity {
     public void trot() {
     	File dir = new File("/sdcard/globetrotter/mytags");
     	String[] TAGS = dir.list();
-    	Random randgen = new Random();
-    	filename = "/sdcard/globetrotter/mytags/" + TAGS[randgen.nextInt(TAGS.length)];
+    	filename = "/sdcard/globetrotter/mytags/" + TAGS[rand.nextInt(TAGS.length)];
     	mBitmap = BitmapFactory.decodeFile(filename);
+    	mImgView.setImage(mBitmap);
         // reset pan state
         mPanState.resetPanState();
+        
     }
 }
 
