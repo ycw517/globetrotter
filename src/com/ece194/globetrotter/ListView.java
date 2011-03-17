@@ -45,7 +45,12 @@ public class ListView extends ListActivity {
          * @see android.widget.ListAdapter#getCount()
          */
         public int getCount() {
-            return TAGS.length;
+        	try {
+        		return TAGS.length;
+        	} catch (Exception e) {
+        		dir.mkdirs();
+        		return 0;
+        	}
         }
 
         /**
@@ -136,45 +141,6 @@ public class ListView extends ListActivity {
             TextView text;
         }
     }
-
-    private static String getExifTag(ExifInterface exif,String tag){
-        String attribute = exif.getAttribute(tag);
-        
-        return (null != attribute ? attribute : "");
-}
-
-    
-    
-    private Float convertToDegree(String stringDMS){
-    	 Float result = null;
-    	 String[] DMS = stringDMS.split(",", 3);
-
-    	 String[] stringD = DMS[0].split("/", 2);
-    	    Double D0 = new Double(stringD[0]);
-    	    Double D1 = new Double(stringD[1]);
-    	    Double FloatD = D0/D1;
-
-    	 String[] stringM = DMS[1].split("/", 2);
-    	 Double M0 = new Double(stringM[0]);
-    	 Double M1 = new Double(stringM[1]);
-    	 Double FloatM = M0/M1;
-    	  
-    	 String[] stringS = DMS[2].split("/", 2);
-    	 Double S0 = new Double(stringS[0]);
-    	 Double S1 = new Double(stringS[1]);
-    	 Double FloatS = S0/S1;
-    	  
-    	    result = new Float(FloatD + (FloatM/60) + (FloatS/3600));
-    	  
-    	 return result;
-
-
-    	};
-    
-    
-    
-    
-    
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -186,7 +152,12 @@ public class ListView extends ListActivity {
 
     }
 
-	
+	@Override
+	public void onResume() {
+		TAGS = dir.list();
+		((EfficientAdapter)getListAdapter()).notifyDataSetChanged();
+		super.onResume();
+	}
 	
 	
     @Override
@@ -202,10 +173,13 @@ public class ListView extends ListActivity {
         return true;
        }
       });
+      
+     //  MenuInflater inflater = getMenuInflater();
+     //  inflater.inflate(R.menu.tag_context_menu, menu);
+
+      
     } 
 
-    //  MenuInflater inflater = getMenuInflater();
-     // inflater.inflate(R.menu.tag_context_menu, menu);
       
 
     @Override
@@ -227,8 +201,5 @@ public class ListView extends ListActivity {
         return super.onContextItemSelected(item);
       }
     }
-
-	
-	
 	
 }
