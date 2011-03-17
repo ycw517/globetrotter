@@ -143,7 +143,7 @@ public class GlobeTrotter extends Activity {
 	}
 	
 	public void listTags(View v){
-	    Intent intent = new Intent(this, TagSelectorActivity.class);
+	    Intent intent = new Intent(this, ListView.class);
 	    startActivityForResult(intent, LIST);
 	}
 
@@ -154,8 +154,18 @@ public class GlobeTrotter extends Activity {
 
 	
 	
-	
-	
+	public String locationBuilder(String frac) {
+		
+		String[] location = frac.split(":",3);
+		Log.v("Globetrotter", "Degrees: " + location[0]);
+		Log.v("Globetrotter", "Minutes: " + location[1]);
+		Log.v("Globetrotter", "Seconds: " + location[2]);
+
+		location[2] = Integer.toString((int)(Double.parseDouble(location[2])*10000));
+
+		return String.format("%s/1,%s/1,%s/1000", location[0], location[1], location[2]);
+
+	}
 	
 	
 	
@@ -340,17 +350,6 @@ public class GlobeTrotter extends Activity {
 			}
 	    } 
 	    
-		private String locationBuilder(String frac) {
-			
-			String[] location = frac.split(":",3);
-			Log.v("Globetrotter", "Degrees: " + location[0]);
-			Log.v("Globetrotter", "Minutes: " + location[1]);
-			Log.v("Globetrotter", "Seconds: " + location[2]);
-
-			location[2] = Integer.toString((int)(Double.parseDouble(location[2])*1000));
-
-			return String.format("%s/1,%s/1,%s/1000", location[0], location[1], location[2]);
-
-		}
+		
 	}  
 }
