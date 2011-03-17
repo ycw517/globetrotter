@@ -154,7 +154,43 @@ public class GlobeTrotter extends Activity {
 
 	
 	public void fixLocations(View v) throws IOException {
-	
+		
+		//	File pardall = new File("/sdcard/globetrotter/pardall/globetrotter-2011-3-16-17-34-9.jpg");
+		//	File storketower = new File("/sdcard/globetrotter/storketower/globetrotter-2011-3-16-17-28-5.jpg");
+		//	File campuspoint = new File("/sdcard/globetrotter/storketower/globetrotter-2011-3-16-17-13-50.jpg");
+		//	File rockcircle = new File("/sdcard/globetrotter/storketower/globetrotter-2011-3-16-17-2-58.jpg");
+		//	File lagoon = new File("/sdcard/globetrotter/storketower/globetrotter-2011-3-16-16-55-11.jpg");
+		//	File parkinggarage = new File("/sdcard/globetrotter/storketower/globetrotter-2011-3-16-16-36-29.jpg");
+			
+			//pardall
+			/* ExifInterface pardall = new ExifInterface("/sdcard/globetrotter/mytags/globetrotter-2011-3-16-17-28-5.jpg");
+			Log.i("PARDALL: ", pardall.getAttribute(ExifInterface.TAG_GPS_LATITUDE) + ", " + pardall.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+			pardall.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locationBuilder(Location.convert(34.41205, Location.FORMAT_SECONDS)));
+			pardall.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locationBuilder(Location.convert(-119.84814, Location.FORMAT_SECONDS)));
+			pardall.saveAttributes();
+
+			//campuspoint
+			ExifInterface campuspoint = new ExifInterface("/sdcard/globetrotter/mytags/globetrotter-2011-3-16-17-13-50.jpg");
+			Log.i("CAMPUSPOINT: ", campuspoint.getAttribute(ExifInterface.TAG_GPS_LATITUDE) + ", " + campuspoint.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+			campuspoint.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locationBuilder(Location.convert(34.40510, Location.FORMAT_SECONDS)));
+			campuspoint.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locationBuilder(Location.convert(-119.84410, Location.FORMAT_SECONDS)));
+			campuspoint.saveAttributes();
+
+			//rockcircle
+			ExifInterface rockcircle = new ExifInterface("/sdcard/globetrotter/mytags/globetrotter-2011-3-16-17-2-58.jpg");
+			Log.i("ROCKCIRCLE: ", rockcircle.getAttribute(ExifInterface.TAG_GPS_LATITUDE) + ", " + rockcircle.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+			rockcircle.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locationBuilder(Location.convert(34.40700, Location.FORMAT_SECONDS)));
+			rockcircle.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locationBuilder(Location.convert(-119.84846, Location.FORMAT_SECONDS)));
+			rockcircle.saveAttributes();
+			
+			//parkinggarage
+			ExifInterface parkinggarage = new ExifInterface("/sdcard/globetrotter/mytags/globetrotter-2011-3-16-16-55-11.jpg");
+			Log.i("PARKINGGARAGE: ", parkinggarage.getAttribute(ExifInterface.TAG_GPS_LATITUDE) + ", " + parkinggarage.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
+			parkinggarage.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, locationBuilder(Location.convert(34.40779, Location.FORMAT_SECONDS)));
+			parkinggarage.setAttribute(ExifInterface.TAG_GPS_LATITUDE, locationBuilder(Location.convert(-119.85040, Location.FORMAT_SECONDS)));
+			parkinggarage.saveAttributes();
+					*/
+
 	}
 	
 	public String locationBuilder(String frac) {
