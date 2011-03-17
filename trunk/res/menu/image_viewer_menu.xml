@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/toggleInput" android:title="View"/>
+    <item android:id="@+id/toggleInput" android:checkable="true" android:title="Toggle"/>
     <item android:id="@+id/tagRename" android:title="Rename"/>
     <item android:id="@+id/tagDelete" android:title="Delete"/>
     <item android:id="@+id/trotMenuButton" android:title="Trot"/>

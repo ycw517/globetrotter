@@ -45,12 +45,7 @@ public class ListView extends ListActivity {
          * @see android.widget.ListAdapter#getCount()
          */
         public int getCount() {
-        	try {
-        		return TAGS.length;
-        	} catch (Exception e) {
-        		dir.mkdirs();
-        		return 0;
-        	}
+            return TAGS.length;
         }
 
         /**
@@ -207,13 +202,10 @@ public class ListView extends ListActivity {
         return true;
        }
       });
-      
-     //  MenuInflater inflater = getMenuInflater();
-     //  inflater.inflate(R.menu.tag_context_menu, menu);
-
-      
     } 
 
+    //  MenuInflater inflater = getMenuInflater();
+     // inflater.inflate(R.menu.tag_context_menu, menu);
       
 
     @Override

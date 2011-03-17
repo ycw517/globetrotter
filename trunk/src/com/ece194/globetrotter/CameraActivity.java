@@ -53,7 +53,6 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolder.Callback, Camera.AutoFocusCallback, Observer {
 
@@ -116,6 +115,9 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	    pDialogue.setCancelable(false);
     	pDialogue.setProgress(0);
 
+
+    	
+    	
     	mNotificationManager = (NotificationManager) getSystemService(ns);
     	int icon = R.drawable.view_normal;
     	CharSequence tickerText = "Your panorama is ready";
@@ -127,7 +129,8 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
     	Intent notificationIntent = new Intent(this, CameraActivity.class);
     	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     	notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
- 
+
+    	
     	builder = new AlertDialog.Builder(this);
     	builder.setTitle("Failed!");
     	builder.setMessage("Sorry, but we couldn't process your images. Please try again! ")
@@ -142,12 +145,6 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		// Init compass listeners
 		mCompassListener = new PanCompassListener(getApplicationContext());
 		mPanState = new PanState();
-		mPanState.resetPanState();		
-		mCompassListener.setPanState(mPanState);
-		mPanState.addObserver(this);
-		
-		mCompassListener.setOrientation(PanCompassListener.ORIENTATION_LANDSCAPE);
-		
 	   	}
 
 	@Override
@@ -160,24 +157,24 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	@Override
 	public void onPause() {
   		super.onPause();
-		mCompassListener.stop();
-
+  		
 		if (mPreviewRunning) {
 			mCamera.stopPreview();
 			mPreviewRunning = false;
+			mCompassListener.stop();
 		}
 		mCamera.setPreviewCallback(null); // this is necessary to prevent the callback from trying to access an empty surfaceview
 		 mCamera.release();		
 	}
 	
-/*
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.capture_menu, menu);
 	    return true;
 	}
-*/
+
 	public void startRecording() {
 		isRecording = true;
 		mCaptureFrame = true;
@@ -223,7 +220,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 
 		
 	}
-/*	
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -242,7 +239,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	*/
+	
 	// implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
@@ -274,9 +271,9 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		public void onPreviewFrame(byte[] data, Camera camera) {
 			if (mCaptureFrame) {
 				mCaptureFrame = false;
-				frame[0] = (byte)frame_number++;
+				frame[0] = (byte)frame_number;
 				new FrameHandler().execute(data, frame);
-				
+				frame_number++;
 				
 			    mPreviewText.setText("Frames Captured: " + frame_number);
 			}
@@ -396,25 +393,14 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
     // implements Observer
     // captures a frame when the compass listener says it is appropriate
     public void update(Observable observable, Object data) {
-    	
     	// TODO: determine conditions for capture
     	float heading = mPanState.getPanX();
     	if (frame_number == 0) {
     		mInitialHeading = heading;
     		mCaptureFrame = true;
-    		
-        	Log.e("globetrotter update", "Frame number: " + frame_number );
-        	Log.e("globetrotter update", "heading delta: " + (heading-mInitialHeading) );
-
-    		
     	}
-    	else if (Math.abs(heading-mInitialHeading) >= frame_number*45.f/360.f) {
+    	if (heading-mInitialHeading >= 20.f/360.f)
         	mCaptureFrame = true;
-        	Log.e("globetrotter update", "Frame number: " + frame_number );
-        	Log.e("globetrotter update", "heading delta: " + (heading-mInitialHeading) );
-
-    	}
-
     }
 
     public class FrameHandler extends AsyncTask<byte[], Void, Boolean> {

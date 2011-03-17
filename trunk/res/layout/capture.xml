@@ -1,43 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="horizontal" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:id="@+id/captureLayout">
+	android:layout_height="fill_parent" android:id="@+id/captureLayout"
+	android:padding="20px">
 
 	<LinearLayout android:orientation="vertical" 
 		android:layout_width="wrap_content"
 		android:layout_height="fill_parent"
-		android:gravity="center">
+		android:gravity="center"
+		android:paddingRight="20px">
 		
 		<SurfaceView android:id="@+id/preview"	
 			android:layout_width="480px"
 			android:layout_height="320px"
-			android:layout_margin="20px"/>
+			/>
 	</LinearLayout>
 	
 	<LinearLayout android:orientation="vertical" 
-		android:layout_width="wrap_content"
+		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
-		android:gravity="center_vertical">
+		android:gravity="center_vertical|center_horizontal">
 
 		<TextView 
 			android:id="@+id/previewText"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"></TextView>
+
+
 		<Button 
 			android:id="@+id/captureFrame"
-			android:layout_width="wrap_content"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:text="Capture"
-			android:onClick="captureFrame"></Button>
+			android:onClick="captureFrame"
+			android:textSize="25sp"			
+			></Button>
+			
 		<Button 
 			android:id="@+id/captureFrame2"
-			android:layout_width="wrap_content"
+			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
-			android:text="Async Toast"
-			android:onClick="toast"></Button>
+			android:text="Done!"
+			android:onClick="toast"
+			android:layout_marginTop="20sp"
+			android:textSize="25sp"
+			>
+			
+			</Button>
 			
 			
-			
+						<ToggleButton
+			android:id="@+id/toggleButton"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textOn="360° On"
+			android:textOff="360° Off"
+			android:layout_marginTop="20sp"
+			android:textSize="25sp"
+			android:onClick="toggle360"
+			></ToggleButton>
 			
 	</LinearLayout>
 	
