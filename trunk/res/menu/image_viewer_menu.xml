@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/toggleInput" android:checkable="true" android:title="Toggle Pan Control" android:icon="@drawable/ic_menu_resize"/>
-    <item android:id="@+id/tagRename" android:title="Rename" android:icon="@drawable/ic_menu_tag"/>
-    <item android:id="@+id/tagDelete" android:title="Delete" android:icon="@drawable/ic_menu_stop"/>
     <item android:id="@+id/trotMenuButton" android:title="Trot" android:icon="@drawable/ic_menu_globe"/>
+    <item android:id="@+id/tagRename" android:title="Rename" android:icon="@drawable/edit"/>
+    <item android:id="@+id/tagDelete" android:title="Delete" android:icon="@drawable/delete"/>
+    <item android:id="@+id/sharePic" android:title="Share" android:icon="@drawable/ic_menu_share"/>
 </menu>
     
     
