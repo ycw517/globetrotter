@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,12 +22,10 @@ import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EntityUtils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
@@ -37,7 +36,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +53,8 @@ public class GlobeTrotter extends Activity {
 	public final static int LIST = 300;
 	public final static int GMAP = 400;
 
+	
+	public Random rand;
 	
 	LocationManager locationManager;
 	
@@ -81,7 +81,7 @@ public class GlobeTrotter extends Activity {
         
     	// Acquire a reference to the system Location Manager
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	    //locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 	    
 	    /* Status Bar Notification Initializations */
@@ -93,21 +93,9 @@ public class GlobeTrotter extends Activity {
     	long when = System.currentTimeMillis();
     	notification = new Notification(notificationIcon, ticker, when);
     	context = getApplicationContext();
-
-    	
-   // 	settings = getSharedPreferences(PREFS_NAME, 0);
-    	
-        //	editor = settings.edit();
-
-
- 
-       // 	editor.putString("latestPanorama", value);
-
-    	
-    
-        //	editor.commit();
-
     		
+    	
+    	rand = new Random();
     	}
     	
     	
@@ -121,8 +109,10 @@ public class GlobeTrotter extends Activity {
     
     @Override
     public void onResume() {
-    	super.onResume();
 	    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+	    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+    	super.onResume();
     }
 	
 	
@@ -151,8 +141,21 @@ public class GlobeTrotter extends Activity {
 	    Intent intent = new Intent(this, GMapActivity.class);
 	    startActivityForResult(intent, GMAP);
 	}
+	
+	public void trot(View v) {
+		File dir = new File("/sdcard/globetrotter/mytags");
+		String[] TAGS = dir.list();
+		
+	    Intent intent = new Intent(this, ViewerActivity.class);
+    	intent.putExtra("filename","/sdcard/globetrotter/mytags/"+ TAGS[rand.nextInt(TAGS.length)]);
+	    startActivityForResult(intent, VIEWER);
+		
+	}
 
 	
+	public void fixLocations(View v) throws IOException {
+	
+	}
 	
 	public String locationBuilder(String frac) {
 		
@@ -198,6 +201,9 @@ public class GlobeTrotter extends Activity {
 		     longitude = Location.convert(location.getLatitude(), Location.FORMAT_SECONDS);
 		     latitude = Location.convert(location.getLongitude(), Location.FORMAT_SECONDS);
 			//     Toast.makeText(getApplicationContext(), "Location: " + Double.toString(location.getLatitude()) + ", " + Double.toString(location.getLongitude()) , Toast.LENGTH_LONG).show();
+	    
+		 	    ((TextView) findViewById(R.id.wakkaText)).setText(longitude + ", " + latitude);
+
 	    }
 
 	    public void onStatusChanged(String provider, int status, Bundle extras) {}

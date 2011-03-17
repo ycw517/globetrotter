@@ -59,6 +59,13 @@
             </intent-filter>
         </activity>
         
+        <activity android:name="com.ece194.globetrotter.GridViewActivity"
+        		 android:label="@string/view_tags" android:configChanges="orientation|keyboardHidden">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>        
+        
         <activity android:name="com.ece194.globetrotter.GMapActivity"
         		 android:label="@string/view_tags" android:configChanges="orientation|keyboardHidden">
             <intent-filter>
