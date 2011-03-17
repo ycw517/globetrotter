@@ -170,14 +170,14 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 		 mCamera.release();		
 	}
 	
-
+/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.capture_menu, menu);
 	    return true;
 	}
-
+*/
 	public void startRecording() {
 		isRecording = true;
 		mCaptureFrame = true;
@@ -223,7 +223,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 
 		
 	}
-	
+/*	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -242,7 +242,7 @@ public class CameraActivity<ExampleApp> extends Activity implements SurfaceHolde
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+	*/
 	// implements SurfaceHolder.Callback
 	public void surfaceCreated(SurfaceHolder holder) {
 		mCamera = Camera.open();
