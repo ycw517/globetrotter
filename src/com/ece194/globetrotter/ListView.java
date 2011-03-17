@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.BaseAdapter;
@@ -113,6 +114,20 @@ public class ListView extends ListActivity {
             convertView.setFocusable(true);
         //    convertView.setFocusableInTouchMode(convertView.isInTouchMode ());
             convertView.setClickable(true);
+            
+            
+    /*       convertView.setOnLongClickListener(
+            	new OnLongClickListener() {
+					@Override
+					public boolean onLongClick(View v) {
+						openContextMenu(convertView);
+						return false;
+					}
+            	
+            	}
+            
+            
+            ); */
             
             
             convertView.setOnClickListener(
