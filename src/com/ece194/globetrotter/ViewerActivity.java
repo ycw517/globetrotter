@@ -1,15 +1,24 @@
 package com.ece194.globetrotter;
 
+import java.io.File;
+import java.util.Random;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.ece194.pan.ImageViewer;
 import com.ece194.pan.PanCompassListener;
@@ -23,12 +32,6 @@ public class ViewerActivity extends Activity {
 
     /** Private const that names the compass listener */
     private static final int COMPASS_LISTENER = 1;
-
-    /** Menu item touch */
-    private static final int MENU_TOUCH = 0;
-    
-    /** Menu item compass */
-    private static final int MENU_COMPASS = 1;
     
     /** Image zoom view */
     private ImageViewer mImgView;
@@ -36,6 +39,9 @@ public class ViewerActivity extends Activity {
     /** Zoom state */
     private PanState mPanState;
 
+    /** Filename of picture being viewed */
+	private String filename;
+	
     /** Decoded bitmap image */
     private Bitmap mBitmap;
 
@@ -45,9 +51,6 @@ public class ViewerActivity extends Activity {
     
     /** Determine which sensor to use */
     private int mListener = TOUCH_LISTENER;
-    
-    /** Transparent buttons */
-    private Button mSensorButton;
 
     private void setSensorTo(int sensor) {
     	switch (sensor) {
@@ -61,8 +64,6 @@ public class ViewerActivity extends Activity {
     			// turn on the listener and set the current pan state
     			mImgView.setOnTouchListener(mPanTouchListener);
     			mPanTouchListener.setPanState(mPanState);
-    			// change button text
-    	        mSensorButton.setText(R.string.use_compass);
     	        // change listener variable
     	        mListener = TOUCH_LISTENER;
     			break;
@@ -79,8 +80,6 @@ public class ViewerActivity extends Activity {
     			mPanCompassListener.resume();
     			// set the current pan state
     			mPanCompassListener.setPanState(mPanState);
-    			// change button text
-    	        mSensorButton.setText(R.string.use_touch);
     	        // change listener variable
     	        mListener = COMPASS_LISTENER;
     			break;
@@ -116,7 +115,6 @@ public class ViewerActivity extends Activity {
         
     	Bundle extras = getIntent().getExtras(); 
     	String userName;
-    	String filename;
     	if (extras != null) {
     	    filename = extras.getString("filename");
     	    // and get whatever type user account id is
@@ -135,44 +133,17 @@ public class ViewerActivity extends Activity {
         mImgView.setPanState(mPanState);
         mImgView.setImage(mBitmap);
     	mImgView.setPanState(mPanState);
-    	// set up buttons
-        mSensorButton = (Button)findViewById(R.id.button_togglesensor);
         
         setSensorTo(mListener);
     }
-    
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ( keyCode == KeyEvent.KEYCODE_MENU ) {
-        	if (mSensorButton.getVisibility() == View.GONE)
-        		mSensorButton.setVisibility(View.VISIBLE);
-        	else
-                mSensorButton.setVisibility(View.GONE);
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-/*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	if (mSensorButton.getVisibility() == View.GONE)
-    		mSensorButton.setVisibility(View.VISIBLE);
-    	else
-            mSensorButton.setVisibility(View.GONE);
+    	MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.image_viewer_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
     
-    @Override
-    public boolean onMenuOpened(int featureid, Menu menu) {
-        mSensorButton.setVisibility(View.VISIBLE);
-        return super.onMenuOpened(featureid, menu);
-    }
-    
-    @Override
-    public void onOptionsMenuClosed(Menu menu) {
-    	mSensorButton.setVisibility(View.GONE);
-    }
-*/    
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -187,24 +158,123 @@ public class ViewerActivity extends Activity {
     }
     
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case MENU_TOUCH:
-                setSensorTo(TOUCH_LISTENER);
-                break;
-            case MENU_COMPASS:
-                setSensorTo(COMPASS_LISTENER);
-                break;
-        }
-
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.toggleInput:
+	    	if (mListener == COMPASS_LISTENER)
+	    		setSensorTo(TOUCH_LISTENER);
+	    	else
+	    		setSensorTo(COMPASS_LISTENER);
+	        break;
+	    case R.id.tagRename:
+	    	renameTag();
+	        break;
+	    case R.id.tagDelete:
+	    	deleteTag();
+	        break;
+	    case R.id.sharePic:
+	    	share();
+	    case R.id.trotMenuButton:
+	    	trot();
+	    	break;
+	    default:
+	        break;
+	    }
         return super.onOptionsItemSelected(item);
+	}
+    
+    private void share() {
+    	
+    	Intent share = new Intent(Intent.ACTION_SEND);
+    	share.setType("image/png");
+
+    	share.putExtra(Intent.EXTRA_STREAM,
+    	  Uri.parse("file://" + filename));
+
+    	startActivity(Intent.createChooser(share, "Share Tag"));
+
     }
     
-    public void toggleSensor(View v) {
-    	if (mListener == COMPASS_LISTENER)
-    		setSensorTo(TOUCH_LISTENER);
-    	else
-    		setSensorTo(COMPASS_LISTENER);
+    private void renameTag() {
+    	// get the base file name (not the full path)
+    	String[] splitstr = filename.split("/");
+    	String basefname = splitstr[splitstr.length-1];
+    	
+    	AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+    	alert.setTitle("Rename");
+    	alert.setMessage("Enter a new filename");
+
+    	// Set an EditText view to get user input 
+    	final EditText input = new EditText(this);
+    	input.setText(basefname);
+    	alert.setView(input);
+
+    	// Rename file
+    	alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    	public void onClick(DialogInterface dialog, int whichButton) {
+    		String filename_new = input.getText().toString();
+    		File orig = new File(filename);
+    		File file_new = new File("/sdcard/globetrotter/mytags/"+filename_new);
+    		if (orig.renameTo(file_new)) {
+    			Toast toast = Toast.makeText(getApplicationContext(), "Successfully renamed to " + filename_new, Toast.LENGTH_SHORT);
+    			toast.show();
+    		}
+    		else {
+    			Toast toast = Toast.makeText(getApplicationContext(), "Error renaming", Toast.LENGTH_SHORT);
+    			toast.show();
+    		}
+    	  }
+    	});
+
+    	alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+    	  public void onClick(DialogInterface dialog, int whichButton) {
+    	    // Canceled.
+    	  }
+    	});
+
+    	alert.show();
+    }
+    
+    private void deleteTag() {
+    	AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+    	alert.setTitle("Delete panorama");
+    	alert.setMessage("Are you sure you want to delete this image?");
+
+    	// Delete file file
+    	alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+    	public void onClick(DialogInterface dialog, int whichButton) {
+    		File orig = new File(filename);
+    		if (orig.delete()) {
+    			Toast toast = Toast.makeText(getApplicationContext(), "Successfully deleted " + filename, Toast.LENGTH_SHORT);
+    			toast.show();
+    		}
+    		else {
+    			Toast toast = Toast.makeText(getApplicationContext(), "Error deleting", Toast.LENGTH_SHORT);
+    			toast.show();
+    		}
+    	  }
+    	});
+
+    	alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+    	  public void onClick(DialogInterface dialog, int whichButton) {
+    	    // Canceled.
+    	  }
+    	});
+
+    	alert.show();
+    }
+    
+    public void trot() {
+    	File dir = new File("/sdcard/globetrotter/mytags");
+    	String[] TAGS = dir.list();
+    	Random randgen = new Random();
+    	filename = "/sdcard/globetrotter/mytags/" + TAGS[randgen.nextInt(TAGS.length)];
+    	mBitmap = BitmapFactory.decodeFile(filename);
+        // reset pan state
+        mPanState.resetPanState();
     }
 }
 
